@@ -382,32 +382,350 @@ a:hover{text-decoration:underline}
 
         <!-- Panel: Executive Summary -->
         <div id="exec-summary" class="panel active">
-            <!-- Content will be added -->
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">£8.24M</div><div class="kpi-label">Total Donations (YTD)</div><div class="kpi-trend up">&#9650; 8.2% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">13,120</div><div class="kpi-label">Active Donors</div><div class="kpi-trend up">&#9650; 4.6% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">£5.25M</div><div class="kpi-label">Partnership Funding</div><div class="kpi-trend up">&#9650; 12.1% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--amber)"></div><div class="kpi-value">142,000</div><div class="kpi-label">Volunteer Hours</div><div class="kpi-trend up">&#9650; 6.8% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">£390</div><div class="kpi-label">Cost per Beneficiary</div><div class="kpi-trend down-good">&#9660; 3.2% (improving)</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Income Trends (12 Months)</div><div class="card-sub">Monthly income split by Donations, Grants, Earned income</div></div><span class="badge b-info">Synthetic</span></div>
+                    <div class="chart-box"><canvas id="execTrendChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Income Source Mix</div><div class="card-sub">Breakdown by source type</div></div></div>
+                    <div class="chart-box"><canvas id="execSourceChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Programme Impact</div><div class="card-sub">Beneficiary outcomes vs targets by programme</div></div></div>
+                    <div class="chart-box"><canvas id="execImpactChart"></canvas></div>
+                </div>
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Financial Health</div><div class="card-sub">Organisation health across 6 dimensions</div></div></div>
+                    <div class="chart-box"><canvas id="execRadarChart"></canvas></div>
+                </div>
+            </div>
         </div>
 
         <!-- Panel: Fundraising -->
         <div id="fundraising" class="panel">
-            <!-- Content will be added -->
+            <!-- Filters -->
+            <div class="filters">
+                <label>Period:</label>
+                <select class="fsel" id="frPeriod"><option value="12">Last 12 Months</option><option value="6">Last 6 Months</option><option value="3">Last 3 Months</option><option value="all">All Time</option></select>
+                <label>Campaign:</label>
+                <select class="fsel" id="frCampaign"><option value="all">All Campaigns</option><option value="winter">Winter Appeal 2025</option><option value="gala">Spring Gala</option><option value="biggive">Big Give Christmas</option><option value="emergency">Emergency Housing Appeal</option><option value="youth">Youth Futures Campaign</option><option value="legacy">Legacy Giving Programme</option><option value="corporate">Corporate Partnerships</option><option value="regular">Regular Giving Acquisition</option></select>
+                <div class="toggle-wrap"><label>Show segments</label><label class="toggle"><input type="checkbox" id="frSegToggle"><span class="slider"></span></label></div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">£8.24M</div><div class="kpi-label">Total Donations</div><div class="kpi-trend up">&#9650; 8.2%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">£48.60</div><div class="kpi-label">Average Gift</div><div class="kpi-trend up">&#9650; 3.1%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">62%</div><div class="kpi-label">Donor Retention Rate</div><div class="kpi-trend up">&#9650; 2.4pp</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">£0.22</div><div class="kpi-label">Cost per £ Raised</div><div class="kpi-trend down-good">&#9660; 4.1% (improving)</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--amber)"></div><div class="kpi-value">45%</div><div class="kpi-label">Online Revenue %</div><div class="kpi-trend up">&#9650; 6.2pp</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Monthly Donation Trend</div><div class="card-sub">12-month donations with prior year comparison</div></div></div>
+                    <div class="chart-box"><canvas id="frTrendChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Donor Segmentation</div><div class="card-sub">Active donors by segment</div></div></div>
+                    <div class="chart-box"><canvas id="frSegChart"></canvas></div>
+                </div>
+                <div class="card span8">
+                    <div class="card-header"><div><div class="card-title">Campaign Performance</div><div class="card-sub">Income, cost, and ROI per campaign</div></div></div>
+                    <div class="chart-box"><canvas id="frCampaignChart"></canvas></div>
+                </div>
+                <div class="card span4">
+                    <div class="card-header"><div><div class="card-title">Donation Channel Mix</div><div class="card-sub">% of income by channel</div></div></div>
+                    <div class="chart-box"><canvas id="frChannelChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Donor Retention Cohort</div><div class="card-sub">Retention curves by acquisition year</div></div></div>
+                    <div class="chart-box"><canvas id="frRetentionChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Donor Lifetime Value by Segment</div><div class="card-sub">Average 3-year LTV per segment</div></div></div>
+                    <div class="chart-box"><canvas id="frLTVChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Donor Segment Table -->
+            <div class="card" style="margin-top:1.25rem">
+                <div class="card-header"><div><div class="card-title">Donor Segment Breakdown</div><div class="card-sub">Key metrics by donor segment</div></div></div>
+                <div class="table-scroll">
+                    <table class="data-table" id="donorTable">
+                        <thead><tr><th>Segment</th><th>Count</th><th>Avg Annual Gift</th><th>Retention Rate</th><th>LTV (3yr)</th><th>Trend</th></tr></thead>
+                        <tbody>
+                            <tr><td class="font-bold">Major Donors (£5,000+)</td><td class="mono">42</td><td class="mono">£12,400</td><td class="mono">88%</td><td class="mono">£34,100</td><td class="kpi-trend up">&#9650; 4.2%</td></tr>
+                            <tr><td class="font-bold">Mid-Level (£1,000–£4,999)</td><td class="mono">318</td><td class="mono">£2,150</td><td class="mono">72%</td><td class="mono">£5,400</td><td class="kpi-trend up">&#9650; 6.1%</td></tr>
+                            <tr><td class="font-bold">Regular Givers (monthly)</td><td class="mono">3,840</td><td class="mono">£384/yr</td><td class="mono">68%</td><td class="mono">£1,020</td><td class="kpi-trend up">&#9650; 8.4%</td></tr>
+                            <tr><td class="font-bold">One-time Donors</td><td class="mono">8,920</td><td class="mono">£45</td><td class="mono">22%</td><td class="mono">£58</td><td class="kpi-trend down">&#9660; 2.1%</td></tr>
+                            <tr><td class="font-bold">Lapsed (12mo+ no gift)</td><td class="mono">4,150</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="kpi-trend" style="color:var(--amber)">Re-activation target: 8%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Insight Callout -->
+            <div class="insight-callout" style="margin-top:1.25rem">
+                <div class="insight-icon">&#x1F4A1;</div>
+                <div><strong>Lapsed Donor Re-activation Opportunity:</strong> 4,150 lapsed donors identified. Predictive model estimates 8.2% re-activation rate with personalised email sequence, projecting £153,000 additional income. <em>Recommended: launch segmented re-engagement campaign within 30 days.</em></div>
+            </div>
         </div>
 
         <!-- Panel: Partnerships -->
         <div id="partnerships" class="panel">
-            <!-- Content will be added -->
+            <!-- Filters -->
+            <div class="filters">
+                <label>Type:</label>
+                <select class="fsel" id="ptType"><option value="all">All Types</option><option value="corporate">Corporate Sponsor</option><option value="grant">Grant Funder</option><option value="statutory">Statutory</option><option value="trust">Trust/Foundation</option><option value="academic">Academic</option><option value="community">Community</option></select>
+                <label>Health:</label>
+                <select class="fsel" id="ptHealth"><option value="all">All Bands</option><option value="platinum">Platinum (90-100)</option><option value="gold">Gold (75-89)</option><option value="silver">Silver (60-74)</option><option value="bronze">Bronze (&lt;60)</option></select>
+                <div class="toggle-wrap"><label>Show funding view</label><label class="toggle"><input type="checkbox" id="ptFundToggle"><span class="slider"></span></label></div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">47</div><div class="kpi-label">Active Partnerships</div><div class="kpi-trend up">&#9650; 5 new this year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">£5.25M</div><div class="kpi-label">Total Partner Funding</div><div class="kpi-trend up">&#9650; 12.1%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">79.4</div><div class="kpi-label">Avg Health Score</div><div class="kpi-trend up">&#9650; 2.8 points</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">91%</div><div class="kpi-label">Project Completion Rate</div><div class="kpi-trend up">&#9650; 3.2pp</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--red)"></div><div class="kpi-value">4</div><div class="kpi-label">At-Risk Partners</div><div class="kpi-trend down-good">&#9660; 2 fewer (improving)</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Partnership Health Distribution</div><div class="card-sub">Partners by health score band</div></div></div>
+                    <div class="chart-box"><canvas id="ptHealthChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Funding by Partner Type</div><div class="card-sub">Annual funding breakdown</div></div></div>
+                    <div class="chart-box"><canvas id="ptTypeChart"></canvas></div>
+                </div>
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Funding Trend (12 Months)</div><div class="card-sub">Monthly funding by partner type</div></div></div>
+                    <div class="chart-box"><canvas id="ptTrendChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Partnership Scoring Radar</div><div class="card-sub">Top 3 partners across 4 scoring dimensions</div></div></div>
+                    <div class="chart-box"><canvas id="ptRadarChart"></canvas></div>
+                </div>
+                <div class="card span12">
+                    <div class="card-header"><div><div class="card-title">Collaboration Activity</div><div class="card-sub">Weekly count of meetings, joint initiatives, communications</div></div></div>
+                    <div class="chart-box" style="height:200px"><canvas id="ptActivityChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Partnership Ranking Table -->
+            <div class="card" style="margin-top:1.25rem">
+                <div class="card-header"><div><div class="card-title">Partnership Rankings</div><div class="card-sub">All active partnerships sorted by health score</div></div></div>
+                <div class="table-scroll">
+                    <table class="data-table" id="partnerTable">
+                        <thead><tr><th>Partner</th><th>Type</th><th>Annual Value</th><th>Health Score</th><th>Trend</th><th>Status</th></tr></thead>
+                        <tbody id="partnerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- At-Risk Alert Panel -->
+            <div class="card" style="margin-top:1.25rem;background:linear-gradient(135deg,rgba(239,68,68,.03),rgba(249,115,22,.03));border-color:rgba(239,68,68,.15)">
+                <div class="card-header"><div><div class="card-title" style="color:var(--red)">At-Risk Partnership Alerts</div><div class="card-sub">Partnerships requiring immediate attention</div></div><span class="badge b-err">4 at-risk</span></div>
+                <div class="grid12" id="atRiskGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
         </div>
 
         <!-- Panel: Operations -->
         <div id="operations" class="panel">
-            <!-- Content will be added -->
+            <!-- Filters -->
+            <div class="filters">
+                <label>Programme:</label>
+                <select class="fsel" id="opProg"><option value="all">All Programmes</option><option value="safehomes">Safe Homes</option><option value="futures">Future Foundations</option><option value="wellbeing">Community Wellbeing</option></select>
+                <label>Region:</label>
+                <select class="fsel" id="opRegion"><option value="all">All Regions</option><option value="leeds">Leeds</option><option value="manchester">Manchester</option><option value="newcastle">Newcastle</option><option value="sheffield">Sheffield</option></select>
+                <div class="toggle-wrap"><label>Show forecast</label><label class="toggle"><input type="checkbox" id="opForecastToggle"><span class="slider"></span></label></div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">1,247</div><div class="kpi-label">Active Volunteers</div><div class="kpi-trend up">&#9650; 312 new this year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">11,830</div><div class="kpi-label">Monthly Hours</div><div class="kpi-trend up">&#9650; 6.8%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">28,450</div><div class="kpi-label">Beneficiaries Served</div><div class="kpi-trend up">&#9650; 9.4%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">95%</div><div class="kpi-label">Service Delivery Rate</div><div class="kpi-trend up">&#9650; 2.1pp</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--amber)"></div><div class="kpi-value">£390</div><div class="kpi-label">Cost per Beneficiary</div><div class="kpi-trend down-good">&#9660; 3.2% (improving)</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Service Demand Trend &amp; Forecast</div><div class="card-sub">12-month historical + forecast with confidence band</div></div></div>
+                    <div class="chart-box"><canvas id="opDemandChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Volunteer Hours by Programme</div><div class="card-sub">Monthly hours split by programme</div></div></div>
+                    <div class="chart-box"><canvas id="opVolChart"></canvas></div>
+                </div>
+
+                <!-- 7-Day Demand Forecast -->
+                <div class="card span12">
+                    <div class="card-header"><div><div class="card-title">7-Day Service Demand Forecast</div><div class="card-sub">ML-predicted service sessions with confidence intervals</div></div><span class="badge b-info">84% Accuracy</span></div>
+                    <div class="fc-grid" id="opForecastGrid"></div>
+                </div>
+
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Resource Utilisation</div><div class="card-sub">Available vs deployed across resource types</div></div></div>
+                    <div class="chart-box"><canvas id="opResourceChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Beneficiary Outcomes vs Targets</div><div class="card-sub">Achievement rate by outcome area</div></div></div>
+                    <div class="chart-box"><canvas id="opOutcomeChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Volunteer Retention Trend</div><div class="card-sub">Monthly retention rate over 12 months</div></div></div>
+                    <div class="chart-box"><canvas id="opRetentionChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Service Coverage Map</div><div class="card-sub">34 service delivery locations across Northern England</div></div></div>
+                    <div class="map-wrap" id="opMapWrap"><div id="opMap" style="height:100%;width:100%"></div></div>
+                </div>
+            </div>
+
+            <!-- Demand Drivers Callout -->
+            <div class="insight-callout" style="margin-top:1.25rem">
+                <div class="insight-icon">&#x1F4CA;</div>
+                <div><strong>Seasonal Demand Drivers:</strong> The forecasting model incorporates winter demand spikes (28% increase Nov-Feb), school holiday patterns, economic indicators (cost of living index), and weather severity data. Current capacity utilisation at <strong>97%</strong> indicates need for surge planning. Historical patterns show demand peaks correlate with temperature drops below 5&deg;C and universal credit payment cycles.</div>
+            </div>
         </div>
 
         <!-- Panel: Benchmarks -->
         <div id="benchmarks" class="panel">
-            <!-- Content will be added -->
+            <!-- Controls -->
+            <div class="filters">
+                <label>Benchmark Source:</label>
+                <select class="fsel" id="bmSource"><option value="ncvo">NCVO Almanac</option><option value="aaw">AAW Fundraising</option><option value="mr">M+R Digital</option><option value="charity-digital">Charity Digital</option></select>
+                <label>Organisation Size:</label>
+                <select class="fsel" id="bmSize"><option value="all">All Sizes</option><option value="tier1">Tier 1 (&lt;£500k)</option><option value="tier2">Tier 2 (£500k–£15m)</option><option value="tier3">Tier 3 (&gt;£15m)</option></select>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">KPI Benchmark Comparison</div><div class="card-sub">Hope &amp; Compass vs Sector Average vs Top Quartile</div></div></div>
+                    <div class="chart-box"><canvas id="bmCompareChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Data Maturity Assessment</div><div class="card-sub">7 Data Orchard dimensions (1-5 scale)</div></div></div>
+                    <div class="chart-box"><canvas id="bmMaturityChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Fundraising Efficiency Scatter</div><div class="card-sub">Cost per £ raised vs donor retention</div></div></div>
+                    <div class="chart-box"><canvas id="bmScatterChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Income Diversification</div><div class="card-sub">Income source mix comparison</div></div></div>
+                    <div class="chart-box"><canvas id="bmDiversChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Benchmark Data Table -->
+            <div class="card" style="margin-top:1.25rem">
+                <div class="card-header"><div><div class="card-title">Benchmark Data Points</div><div class="card-sub">Hope &amp; Compass performance vs sector benchmarks</div></div></div>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead><tr><th>Metric</th><th>Hope &amp; Compass</th><th>Sector Average</th><th>Top Quartile</th><th>Position</th></tr></thead>
+                        <tbody>
+                            <tr><td class="font-bold">Donor Retention</td><td class="mono">62%</td><td class="mono">40%</td><td class="mono">68%</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Cost per £ Raised</td><td class="mono">£0.22</td><td class="mono">£0.25</td><td class="mono">£0.18</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Fundraising ROI</td><td class="mono">4.5:1</td><td class="mono">4.0:1</td><td class="mono">5.2:1</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Online Revenue %</td><td class="mono">45%</td><td class="mono">32%</td><td class="mono">55%</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Volunteer Retention</td><td class="mono">71%</td><td class="mono">58%</td><td class="mono">78%</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Overhead Ratio</td><td class="mono">29%</td><td class="mono">31%</td><td class="mono">24%</td><td><span class="badge b-info">Average</span></td></tr>
+                            <tr><td class="font-bold">Reserve Months</td><td class="mono">4.2</td><td class="mono">3.6</td><td class="mono">6.0</td><td><span class="badge b-info">Average</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Panel: AI Insights -->
         <div id="ai-insights" class="panel">
-            <!-- Content will be added -->
+            <!-- Filters -->
+            <div class="filters">
+                <label>Vertical:</label>
+                <select class="fsel" id="aiVertical"><option value="all">All Verticals</option><option value="fundraising">Fundraising</option><option value="partnerships">Partnerships</option><option value="operations">Operations</option></select>
+                <label>Priority:</label>
+                <select class="fsel" id="aiPriority"><option value="all">All Priorities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option></select>
+            </div>
+
+            <!-- Dark Insight Panel -->
+            <div class="insight-panel">
+                <div class="card-header"><div><div class="card-title" style="color:#fff">AI-Generated Insights &amp; Recommendations</div><div class="card-sub" style="color:rgba(255,255,255,.5)">Automated pattern detection using predictive models, historical trends, and cross-vertical analysis</div></div></div>
+                <div class="insight-grid" id="insightGrid">
+                    <!-- Fundraising Insights -->
+                    <div class="insight-card" data-vertical="fundraising" data-priority="critical">
+                        <span class="ins-badge crit">Critical</span><span class="ins-badge cat">Fundraising</span>
+                        <div class="ins-text"><strong>Lapsed donor re-activation opportunity:</strong> 4,150 lapsed donors identified. Predictive model estimates 8.2% re-activation rate with personalised email sequence, projecting £153,000 additional income. <em>Recommended: launch segmented re-engagement campaign within 30 days.</em></div>
+                        <div class="ins-meta">Model: Donor Propensity v2.1 &middot; Confidence: 84% &middot; Source: <span class="ins-source">CRM + Email Platform</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="fundraising" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Fundraising</span>
+                        <div class="ins-text"><strong>Regular giving upgrade potential:</strong> 380 regular givers at same monthly amount for 24+ months. Propensity model suggests 42% would respond to personalised upgrade ask, with average uplift of £8/month. <em>Projected annual impact: £14,400.</em></div>
+                        <div class="ins-meta">Model: Upgrade Propensity v1.3 &middot; Confidence: 78% &middot; Source: <span class="ins-source">Payment Records</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="fundraising" data-priority="medium">
+                        <span class="ins-badge med">Medium</span><span class="ins-badge cat">Fundraising</span>
+                        <div class="ins-text"><strong>Digital channel shift:</strong> Online donations grew 12% YoY while direct mail declined 6%. Recommend reallocating 15% of direct mail budget to digital acquisition. <em>Projected improvement: +£62,000 net income at lower cost per acquisition.</em></div>
+                        <div class="ins-meta">Model: Channel Attribution v1.0 &middot; Confidence: 72% &middot; Source: <span class="ins-source">Multi-channel</span></div>
+                    </div>
+
+                    <!-- Partnership Insights -->
+                    <div class="insight-card" data-vertical="partnerships" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Partnerships</span>
+                        <div class="ins-text"><strong>At-risk partnership alert:</strong> University of Leeds partnership (Health Score 64, down 14 points in 6 months) shows declining engagement frequency and missed project milestones. <em>Recommended: schedule strategic review meeting within 2 weeks.</em></div>
+                        <div class="ins-meta">Model: Partnership Health v2.0 &middot; Confidence: 88% &middot; Source: <span class="ins-source">CRM + Project Tracker</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="partnerships" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Partnerships</span>
+                        <div class="ins-text"><strong>Corporate pipeline opportunity:</strong> Scoring model identifies 12 FTSE 350 companies with strong CSR alignment to homelessness and youth development. 3 have existing community programmes in Northern England. <em>Recommended: initiate outreach to top 5 scored prospects.</em></div>
+                        <div class="ins-meta">Model: Prospect Scoring v1.2 &middot; Confidence: 76% &middot; Source: <span class="ins-source">External CSR Data</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="partnerships" data-priority="medium">
+                        <span class="ins-badge med">Medium</span><span class="ins-badge cat">Partnerships</span>
+                        <div class="ins-text"><strong>Grant renewal preparation:</strong> National Lottery Community Fund grant (£520,000) due for renewal in Q3 2026. Historical data shows 78% renewal rate for similar grants. <em>Recommend starting impact report preparation 4 months ahead.</em></div>
+                        <div class="ins-meta">Model: Grant Lifecycle v1.1 &middot; Confidence: 82% &middot; Source: <span class="ins-source">Grant Records</span></div>
+                    </div>
+
+                    <!-- Operations Insights -->
+                    <div class="insight-card" data-vertical="operations" data-priority="critical">
+                        <span class="ins-badge crit">Critical</span><span class="ins-badge cat">Operations</span>
+                        <div class="ins-text"><strong>Winter demand surge predicted:</strong> Forecasting model predicts 28% increase in service demand over the next 8 weeks based on seasonal patterns, weather forecasts, and economic indicators. Current capacity at 97%. <em>Recommended: activate surge volunteer recruitment and partner referral pathways.</em></div>
+                        <div class="ins-meta">Model: Demand Forecast v3.0 &middot; Confidence: 86% &middot; Source: <span class="ins-source">Multi-source</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="operations" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Operations</span>
+                        <div class="ins-text"><strong>Volunteer burnout risk:</strong> 42 volunteers have logged 20+ hours/week for 3+ consecutive months. Retention model flags these as high burnout risk (68% probability of departure within 90 days). <em>Recommended: implement wellness check-ins and schedule relief rotations.</em></div>
+                        <div class="ins-meta">Model: Volunteer Retention v1.4 &middot; Confidence: 81% &middot; Source: <span class="ins-source">Volunteer System</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="operations" data-priority="medium">
+                        <span class="ins-badge med">Medium</span><span class="ins-badge cat">Operations</span>
+                        <div class="ins-text"><strong>Service delivery gap in Sheffield:</strong> Demand-to-capacity ratio in Sheffield region is 1.4x vs 0.9x in other regions. Travel time analysis shows 18% of Sheffield beneficiaries travel 40+ minutes to reach services. <em>Recommended: evaluate satellite service point or mobile delivery model.</em></div>
+                        <div class="ins-meta">Model: Geospatial Analysis v1.0 &middot; Confidence: 74% &middot; Source: <span class="ins-source">Service Records</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
