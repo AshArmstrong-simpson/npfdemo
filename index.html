@@ -1122,6 +1122,7 @@ const PARTNERS=[
     {name:'Harrogate BC',type:'Statutory',value:'£22,000',score:54,trend:'-3',status:'Bronze'},
     {name:'North Lincs Council',type:'Statutory',value:'£32,000',score:48,trend:'-6',status:'Bronze'}
 ];
+window.PARTNERS=PARTNERS;
 const ptb=document.getElementById('partnerTableBody');
 if(ptb)PARTNERS.forEach(p=>{
     const sc=p.score>=90?'background:rgba(16,202,114,.1);color:#10CA72':p.score>=75?'background:rgba(44,131,211,.1);color:#2C83D3':p.score>=60?'background:rgba(234,179,8,.12);color:#b8860b':'background:rgba(239,68,68,.1);color:#EF4444';
@@ -1282,18 +1283,59 @@ if(aiP)aiP.addEventListener('change',filterInsights);
 /* ═══════════════════════════════════════════════════════════
    PANEL FILTERS & TOGGLES (deferred chart lookups)
    ═══════════════════════════════════════════════════════════ */
-/* Fundraising period filter */
+
+/* ── Fundraising Filters ──────────────────────────────────── */
 const frPeriod=document.getElementById('frPeriod');
+const frCampaign=document.getElementById('frCampaign');
 if(frPeriod){
     const fullThisYr=[580,620,710,650,690,720,750,680,810,890,720,780];
     const fullPriorYr=[520,560,640,610,630,660,680,620,740,800,680,710];
+    const fullCampIncome=[420,380,310,290,180,520,340,280];
+    const fullCampCost=[62,85,38,42,28,18,52,45];
     frPeriod.addEventListener('change',function(){
-        const ch=Chart.getChart('frTrendChart');if(!ch)return;
         const n=this.value==='all'?12:parseInt(this.value);
-        ch.data.labels=MONTHS.slice(-n);
-        ch.data.datasets[0].data=fullThisYr.slice(-n);
-        ch.data.datasets[1].data=fullPriorYr.slice(-n);
-        ch.update();
+        const scale=n/12;
+        /* Trend chart */
+        const ch=Chart.getChart('frTrendChart');
+        if(ch){ch.data.labels=MONTHS.slice(-n);ch.data.datasets[0].data=fullThisYr.slice(-n);ch.data.datasets[1].data=fullPriorYr.slice(-n);ch.update();}
+        /* Campaign chart — scale income/cost by period */
+        const fc=Chart.getChart('frCampaignChart');
+        if(fc){fc.data.datasets[0].data=fullCampIncome.map(v=>Math.round(v*scale));fc.data.datasets[1].data=fullCampCost.map(v=>Math.round(v*scale));fc.update();}
+        /* Channel chart — seasonal variation */
+        const fch=Chart.getChart('frChannelChart');
+        if(fch){const cd={12:[45,22,15,12,6],6:[48,20,14,12,6],3:[52,18,12,13,5]};fch.data.datasets[0].data=cd[n]||cd[12];fch.update();}
+        /* KPIs */
+        const kpis=document.querySelectorAll('#fundraising .kpi-value');
+        if(kpis.length>=5){
+            const tots={12:'£8.24M',6:'£4.52M',3:'£2.39M'};
+            const avgs={12:'£48.60',6:'£51.20',3:'£54.80'};
+            kpis[0].textContent=tots[n]||tots[12];
+            kpis[1].textContent=avgs[n]||avgs[12];
+        }
+    });
+}
+/* Fundraising campaign filter */
+if(frCampaign){
+    const campNames=['Winter Appeal','Spring Gala','Big Give','Emergency','Youth Futures','Legacy','Corporate','Regular Giving'];
+    const campKeys=['winter','gala','biggive','emergency','youth','legacy','corporate','regular'];
+    const campIncome=[420,380,310,290,180,520,340,280];
+    const campCost=[62,85,38,42,28,18,52,45];
+    frCampaign.addEventListener('change',function(){
+        const fc=Chart.getChart('frCampaignChart');if(!fc)return;
+        const v=this.value;
+        if(v==='all'){
+            fc.data.labels=campNames.slice();fc.data.datasets[0].data=campIncome.slice();fc.data.datasets[1].data=campCost.slice();
+        }else{
+            const idx=campKeys.indexOf(v);
+            if(idx>=0){fc.data.labels=[campNames[idx]];fc.data.datasets[0].data=[campIncome[idx]];fc.data.datasets[1].data=[campCost[idx]];}
+        }
+        fc.update();
+        /* Update total donations KPI */
+        const kpis=document.querySelectorAll('#fundraising .kpi-value');
+        if(kpis.length>=1){
+            if(v==='all')kpis[0].textContent='£8.24M';
+            else{const idx=campKeys.indexOf(v);if(idx>=0)kpis[0].textContent='£'+campIncome[idx]+'k';}
+        }
     });
 }
 /* Fundraising segment toggle — switch between count and value view */
@@ -1312,46 +1354,151 @@ if(frSegToggle){
         ch.update();
     });
 }
-/* Partnership table filters */
+
+/* ── Partnership Filters ──────────────────────────────────── */
 const ptType=document.getElementById('ptType');
 const ptHealth=document.getElementById('ptHealth');
-function filterPartnerTable(){
+const ptTypeMap={'corporate':'Corporate','grant':'Grant Funder','statutory':'Statutory','academic':'Academic','community':'Community'};
+function matchType(ptype,fval){if(fval==='all')return true;if(fval==='trust')return ptype.includes('Trust')||ptype.includes('Foundation');return ptype===(ptTypeMap[fval]||'');}
+function matchHealth(score,fval){if(fval==='all')return true;if(fval==='platinum')return score>=90;if(fval==='gold')return score>=75&&score<90;if(fval==='silver')return score>=60&&score<75;return score<60;}
+function filterPartners(){
     const t=ptType?ptType.value:'all';
     const h=ptHealth?ptHealth.value:'all';
+    const P=window.PARTNERS||[];
+    const filtered=P.filter(p=>matchType(p.type,t)&&matchHealth(p.score,h));
+    /* Filter table rows */
     document.querySelectorAll('#partnerTableBody tr').forEach(row=>{
-        const cells=row.querySelectorAll('td');
-        if(cells.length<6)return;
-        const type=cells[1].textContent.trim();
-        const score=parseInt(cells[3].textContent);
-        let showType=t==='all';
-        if(t==='corporate')showType=type==='Corporate';
-        if(t==='grant')showType=type==='Grant Funder';
-        if(t==='statutory')showType=type==='Statutory';
-        if(t==='trust')showType=type.includes('Trust')||type.includes('Foundation');
-        if(t==='academic')showType=type==='Academic';
-        if(t==='community')showType=type==='Community';
-        let showHealth=h==='all';
-        if(h==='platinum')showHealth=score>=90;
-        if(h==='gold')showHealth=score>=75&&score<90;
-        if(h==='silver')showHealth=score>=60&&score<75;
-        if(h==='bronze')showHealth=score<60;
-        row.style.display=(showType&&showHealth)?'':'none';
+        const cells=row.querySelectorAll('td');if(cells.length<6)return;
+        const type=cells[1].textContent.trim();const score=parseInt(cells[3].textContent);
+        row.style.display=(matchType(type,t)&&matchHealth(score,h))?'':'none';
     });
+    /* Health distribution chart */
+    const hc=Chart.getChart('ptHealthChart');
+    if(hc){hc.data.datasets[0].data=[filtered.filter(p=>p.score>=90).length,filtered.filter(p=>p.score>=75&&p.score<90).length,filtered.filter(p=>p.score>=60&&p.score<75).length,filtered.filter(p=>p.score<60).length];hc.update();}
+    /* Type doughnut */
+    const tc=Chart.getChart('ptTypeChart');
+    if(tc){
+        const sums={'Corporate Sponsor':0,'Grant Funder':0,'Statutory':0,'Trust/Foundation':0,'Academic':0,'Community':0};
+        filtered.forEach(p=>{const val=parseFloat(p.value.replace(/[£,]/g,''));const key=p.type==='Corporate'?'Corporate Sponsor':p.type;if(sums.hasOwnProperty(key))sums[key]+=val;});
+        tc.data.datasets[0].data=Object.values(sums).map(v=>+(v/1000000).toFixed(2));tc.update();
+    }
+    /* KPIs */
+    const kpis=document.querySelectorAll('#partnerships .kpi-value');
+    if(kpis.length>=3){
+        const totalVal=filtered.reduce((s,p)=>s+parseFloat(p.value.replace(/[£,]/g,'')),0);
+        const avgScore=filtered.length>0?(filtered.reduce((s,p)=>s+p.score,0)/filtered.length).toFixed(1):'0.0';
+        kpis[0].textContent=filtered.length;
+        kpis[1].textContent='£'+(totalVal>=1000000?(totalVal/1000000).toFixed(2)+'M':(totalVal/1000).toFixed(0)+'k');
+        kpis[2].textContent=avgScore;
+    }
 }
-if(ptType)ptType.addEventListener('change',filterPartnerTable);
-if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
-/* Benchmarks source filter */
+if(ptType)ptType.addEventListener('change',filterPartners);
+if(ptHealth)ptHealth.addEventListener('change',filterPartners);
+
+/* ── Operations Filters ──────────────────────────────────── */
+const opProg=document.getElementById('opProg');
+const opRegion=document.getElementById('opRegion');
+const opFullDemand=[2100,2250,2400,2180,2320,2500,2650,2450,2800,3100,2700,2900];
+const opProgData={
+    safehomes:{demand:[890,950,1020,920,980,1060,1120,1040,1190,1320,1150,1230],vol:[4200,4500,4800,4300,4600,4900,5200,4700,5500,6100,5300,5600],outcomes:{labels:['Housing Secured','Family Reunion'],achieved:[92,88],target:[85,85]},vols:520,hrs:4800,bens:12200,ret:[70,71,72,71,73,74,73,75,74,76,75,73]},
+    futures:{demand:[680,730,780,710,760,820,870,800,920,1020,890,950],vol:[2800,3000,3200,2900,3100,3300,3500,3200,3800,4000,3500,3700],outcomes:{labels:['Education','Employment'],achieved:[78,68],target:[80,75]},vols:380,hrs:3500,bens:8900,ret:[66,67,68,67,69,70,69,71,70,72,71,69]},
+    wellbeing:{demand:[530,570,600,550,580,620,660,610,690,760,660,720],vol:[1800,1900,2000,1850,1950,2100,2200,2000,2400,2600,2200,2400],outcomes:{labels:['Mental Health','Community Support'],achieved:[85,82],target:[80,78]},vols:347,hrs:3530,bens:7350,ret:[68,69,70,69,71,72,71,73,72,74,73,71]}
+};
+const opRegionMul={leeds:0.35,manchester:0.28,newcastle:0.22,sheffield:0.15};
+function updateOpsCharts(){
+    const prog=opProg?opProg.value:'all';
+    const reg=opRegion?opRegion.value:'all';
+    const rs=reg==='all'?1:opRegionMul[reg]||1;
+    /* Demand */
+    const od=Chart.getChart('opDemandChart');
+    if(od){
+        const d=(prog!=='all'?opProgData[prog].demand:opFullDemand).map(v=>Math.round(v*rs));
+        od.data.datasets[0].data=d;
+        const lv=d[d.length-1];
+        od.data.datasets[1].data=[null,null,null,null,null,null,null,null,null,null,null,lv,Math.round(lv*1.10),Math.round(lv*1.17)];
+        od.data.datasets[2].data=[null,null,null,null,null,null,null,null,null,null,null,Math.round(lv*1.07),Math.round(lv*1.21),Math.round(lv*1.28)];
+        od.data.datasets[3].data=[null,null,null,null,null,null,null,null,null,null,null,Math.round(lv*0.93),Math.round(lv*1.00),Math.round(lv*1.07)];
+        od.update();
+    }
+    /* Volunteer hours */
+    const ov=Chart.getChart('opVolChart');
+    if(ov){
+        const shV=[4200,4500,4800,4300,4600,4900,5200,4700,5500,6100,5300,5600];
+        const ffV=[2800,3000,3200,2900,3100,3300,3500,3200,3800,4000,3500,3700];
+        const cwV=[1800,1900,2000,1850,1950,2100,2200,2000,2400,2600,2200,2400];
+        if(prog==='all'){
+            ov.data.datasets[0].data=shV.map(v=>Math.round(v*rs));ov.data.datasets[1].data=ffV.map(v=>Math.round(v*rs));ov.data.datasets[2].data=cwV.map(v=>Math.round(v*rs));
+        }else{
+            ov.data.datasets[0].data=(prog==='safehomes'?shV:MONTHS.map(()=>0)).map(v=>Math.round(v*rs));
+            ov.data.datasets[1].data=(prog==='futures'?ffV:MONTHS.map(()=>0)).map(v=>Math.round(v*rs));
+            ov.data.datasets[2].data=(prog==='wellbeing'?cwV:MONTHS.map(()=>0)).map(v=>Math.round(v*rs));
+        }
+        ov.update();
+    }
+    /* Outcomes */
+    const oout=Chart.getChart('opOutcomeChart');
+    if(oout){
+        if(prog==='all'){oout.data.labels=['Housing Secured','Employment','Mental Health','Education','Family Reunion'];oout.data.datasets[0].data=[92,68,85,78,88];oout.data.datasets[1].data=[85,75,80,80,85];}
+        else{const pd=opProgData[prog].outcomes;oout.data.labels=pd.labels;oout.data.datasets[0].data=pd.achieved;oout.data.datasets[1].data=pd.target;}
+        oout.update();
+    }
+    /* Retention */
+    const oret=Chart.getChart('opRetentionChart');
+    if(oret){oret.data.datasets[0].data=prog==='all'?[68,69,70,69,71,72,71,73,72,74,73,71]:opProgData[prog].ret;oret.update();}
+    /* Resource — scale by region */
+    const ores=Chart.getChart('opResourceChart');
+    if(ores){ores.data.datasets[0].data=[48,1247,32,12,8].map(v=>Math.round(v*rs));ores.data.datasets[1].data=[45,1074,28,11,7].map(v=>Math.round(v*rs));ores.update();}
+    /* KPIs */
+    const kpis=document.querySelectorAll('#operations .kpi-value');
+    if(kpis.length>=5){
+        let vols=1247,hrs=11830,bens=28450;
+        if(prog!=='all'){const pd=opProgData[prog];vols=pd.vols;hrs=pd.hrs;bens=pd.bens;}
+        vols=Math.round(vols*rs);hrs=Math.round(hrs*rs);bens=Math.round(bens*rs);
+        kpis[0].textContent=vols.toLocaleString();kpis[1].textContent=hrs.toLocaleString();kpis[2].textContent=bens.toLocaleString();
+    }
+}
+if(opProg)opProg.addEventListener('change',updateOpsCharts);
+if(opRegion)opRegion.addEventListener('change',updateOpsCharts);
+
+/* ── Benchmarks Filters ──────────────────────────────────── */
 const bmSource=document.getElementById('bmSource');
-if(bmSource){
-    bmSource.addEventListener('change',function(){
-        const ch=Chart.getChart('bmCompareChart');if(!ch)return;
-        const offsets={ncvo:[0,0,0,0,0,0],aaw:[2,-3,4,5,-2,1],mr:[-3,5,2,8,3,-2],'charity-digital':[4,2,-1,3,-4,3]};
-        const base=[40,75,67,58,58,69];
-        const off=offsets[this.value]||offsets.ncvo;
-        ch.data.datasets[1].data=base.map((v,i)=>v+off[i]);
-        ch.update();
-    });
+const bmSize=document.getElementById('bmSize');
+const bmBaseSA=[40,75,67,58,58,69],bmBaseTQ=[68,82,87,100,78,76];
+const bmSrcOff={ncvo:[0,0,0,0,0,0],aaw:[2,-3,4,5,-2,1],mr:[-3,5,2,8,3,-2],'charity-digital':[4,2,-1,3,-4,3]};
+const bmSzMul={all:1,tier1:0.85,tier2:1,tier3:1.12};
+const bmMatSec=[2.8,2.5,2.9,2.4,2.7,2.6,2.3];
+const bmMatSrcOff={ncvo:[0,0,0,0,0,0,0],aaw:[0.1,-0.1,0.2,0.1,-0.1,0.2,0],mr:[-0.1,0.2,0,0.1,0.1,-0.1,0.2],'charity-digital':[0.2,0.1,-0.1,0,-0.2,0.1,0.1]};
+const bmDivBase={sec:[42,28,12,10,8],tq:[30,25,20,12,13]};
+const bmDivSrcOff={ncvo:[0,0,0,0,0],aaw:[2,-2,1,-1,0],mr:[-3,1,3,1,-2],'charity-digital':[1,-1,-1,2,-1]};
+function updateBenchmarks(){
+    const src=bmSource?bmSource.value:'ncvo';
+    const sz=bmSize?bmSize.value:'all';
+    const soff=bmSrcOff[src]||bmSrcOff.ncvo;
+    const smul=bmSzMul[sz]||1;
+    /* Compare chart */
+    const bc=Chart.getChart('bmCompareChart');
+    if(bc){bc.data.datasets[1].data=bmBaseSA.map((v,i)=>Math.round((v+soff[i])*smul));bc.data.datasets[2].data=bmBaseTQ.map((v,i)=>Math.round((v+Math.round(soff[i]*0.5))*smul));bc.update();}
+    /* Maturity radar */
+    const bm=Chart.getChart('bmMaturityChart');
+    if(bm){const moff=bmMatSrcOff[src]||bmMatSrcOff.ncvo;bm.data.datasets[1].data=bmMatSec.map((v,i)=>+((v+moff[i])*smul).toFixed(1));bm.update();}
+    /* Diversification */
+    const bdv=Chart.getChart('bmDiversChart');
+    if(bdv){const doff=bmDivSrcOff[src]||bmDivSrcOff.ncvo;bdv.data.datasets[1].data=bmDivBase.sec.map((v,i)=>v+doff[i]);bdv.data.datasets[2].data=bmDivBase.tq.map((v,i)=>v+Math.round(doff[i]*0.5));bdv.update();}
+    /* Scatter — regenerate peer data with offset */
+    const bsc=Chart.getChart('bmScatterChart');
+    if(bsc){
+        const xo={'ncvo':0,'aaw':0.02,'mr':-0.02,'charity-digital':0.01}[src]||0;
+        const yo={'ncvo':0,'aaw':3,'mr':-2,'charity-digital':1}[src]||0;
+        const sxo={'all':0,'tier1':0.04,'tier2':0,'tier3':-0.03}[sz]||0;
+        const syo={'all':0,'tier1':-8,'tier2':0,'tier3':5}[sz]||0;
+        const gen=(n,cx,cy,sp)=>Array.from({length:n},()=>({x:+(cx+(Math.random()-.5)*sp).toFixed(3),y:Math.round(cy+(Math.random()-.5)*sp*150)}));
+        bsc.data.datasets[1].data=gen(25,0.25+xo+sxo,42+yo+syo,0.15);
+        bsc.data.datasets[2].data=gen(8,0.18+xo*0.5+sxo*0.5,68+yo*0.5+syo*0.5,0.06);
+        bsc.update();
+    }
 }
+if(bmSource)bmSource.addEventListener('change',updateBenchmarks);
+if(bmSize)bmSize.addEventListener('change',updateBenchmarks);
 
 /* ═══════════════════════════════════════════════════════════
    TABLE SORTING
