@@ -1,10 +1,10 @@
 # NFP Demo Application — Detailed Specification
 
 **Project:** Simpson Associates Not-For-Profit Sector Demo
-**Version:** 1.0
-**Date:** 6 February 2026
+**Version:** 1.1
+**Date:** 7 February 2026
 **Author:** Simpson Associates Data Transformation Consultancy
-**Status:** Draft for Review
+**Status:** Implemented
 
 ---
 
@@ -257,7 +257,7 @@ The application is a **single self-contained HTML file** with all CSS and JavaSc
 
 | Library | Version | Purpose |
 |---------|---------|---------|
-| Chart.js | 4.4.1 | All chart visualisations (line, bar, doughnut, radar, scatter, polar area) |
+| Chart.js | 4.4.1 | All chart visualisations (line, bar, doughnut, radar, scatter, pie) |
 | Leaflet | 1.9.4 | Geographic map for service delivery coverage (Operations tab) |
 | Google Fonts | — | JetBrains Mono (monospace data values) |
 
@@ -267,6 +267,8 @@ The application is a **single self-contained HTML file** with all CSS and JavaSc
 |------|---------|-------|
 | Silka | 400, 500, 600, 700 | All body text, headings, labels |
 | JetBrains Mono | 500, 600 | KPI values, data figures, table cells |
+
+**Map tiles:** CARTO Light (via `basemaps.cartocdn.com`)
 
 ### 4.2 Design System
 
@@ -298,7 +300,7 @@ The design system is inherited directly from the Police Hotspot Landing Page to 
 | `--g50` | `#F3F1ED` | Page background |
 | `--g100` | `#EBE9E4` | Card hover, subtle borders |
 | `--g200` | `#E5E5E5` | Borders, dividers |
-| `--g300` | `#CBD5E1` | Input borders |
+| `--g300` | `#CBD5E1` | Input borders, toggle unchecked |
 | `--g400` | `#979797` | Muted text, labels |
 | `--g500` | `#64748B` | Secondary text |
 | `--g600` | `#475569` | Body text |
@@ -333,18 +335,19 @@ The design system is inherited directly from the Police Hotspot Landing Page to 
 
 | Component | CSS Class | Description |
 |-----------|-----------|-------------|
-| Header | `header`, `.hdr` | Fixed top bar with logo, nav tabs, demo tag |
-| Top Navigation | `.top-nav`, `.top-tab` | Pill-style page switcher in header |
-| Hero Section | `.hero`, `.hero-inner` | Full-width dark hero with two-column grid |
-| Hero Stat | `.h-stat` | Small stat box inside hero (teal monospace value + label) |
+| Header | `.header` | Fixed top bar with logo, nav tabs, demo tag |
+| Top Navigation | `.top-nav`, `.top-tab` | Pill-style page switcher in header (scrollable on mobile) |
+| Demo Tag | `.demo-tag` | Gradient pill badge "NFP Demo" (hidden on mobile) |
+| Hero Section | `.pg-hero` | Full-width dark hero with stats and featured chart |
+| Hero Stat | `.hero-stat` | Small stat box inside hero (teal monospace value + label) |
 | Dashboard Nav | `.dash-nav`, `.d-tab` | Secondary tab bar for dashboard sub-panels |
 | Panel | `.panel` | Content area toggled by dashboard tabs |
-| KPI Card | `.kpi` | White card with coloured top border, monospace value, trend indicator |
+| KPI Card | `.kpi` | White card with coloured left border, monospace value, trend indicator |
 | Chart Card | `.card`, `.chart-box` | White card containing a Chart.js canvas (280px default height) |
 | Filter Bar | `.filters`, `.fsel` | Row of dropdown selects with custom chevron |
-| Toggle Switch | `.toggle-wrap`, `.toggle` | iOS-style toggle for view switching |
+| Toggle Switch | `.toggle-wrap`, `.toggle`, `.toggle.on` | Div-based toggle (44×24px, circle slides right when active, blue background) |
 | Badge | `.badge`, `.b-info`/`.b-ok`/`.b-warn`/`.b-err` | Coloured pill labels |
-| Table | `.rank-table`, `.table-scroll` | Scrollable data table with sticky header |
+| Data Table | `.data-table` | Scrollable sortable data table with sticky header |
 | Insight Card | `.ins` | Dark-background card with priority badge and description |
 | Solution Card | `.sol-card` | White card with icon, title, description, stats row |
 | Case Study Card | `.cs-card` | Card with gradient header, body, metrics, tag |
@@ -355,10 +358,10 @@ The design system is inherited directly from the Police Hotspot Landing Page to 
 The application has four top-level pages, with the Dashboard page containing six sub-panels:
 
 ```
-Header [Logo] [Dashboard | Solutions | Case Studies | Contact] [Demo Environment]
+Header [Logo] [Dashboard | Solutions | Case Studies | Contact] [NFP Demo]
 
 ├── Dashboard Page
-│   ├── Hero Section (title, subtitle, summary stats, featured visualisation)
+│   ├── Hero Section (title, subtitle mentioning Hope & Compass, summary stats, featured doughnut)
 │   ├── Dashboard Nav Tabs
 │   │   ├── Executive Summary    ← Overview KPIs across all verticals
 │   │   ├── Fundraising          ← Donor analytics, segmentation, campaigns
@@ -374,7 +377,7 @@ Header [Logo] [Dashboard | Solutions | Case Studies | Contact] [Demo Environment
 │
 ├── Case Studies Page
 │   ├── Page Hero
-│   └── Case Study Cards Grid (4 cards)
+│   └── Case Study Cards Grid (4 real Simpson Associates clients)
 │
 ├── Contact Page
 │   ├── Page Hero
@@ -445,35 +448,6 @@ Header [Logo] [Dashboard | Solutions | Case Studies | Contact] [Demo Environment
 | Corporate Partnerships | Relationship | £1,420,000 | 47 partners | — | £180,000 | 7.9:1 |
 | Regular Giving Acquisition | F2F + digital | £460,000 | 960 new | 4.1% | £232,000 | 2.0:1 |
 
-#### Monthly Donation Trend (12 months)
-
-| Month | Total Income (£) | Online % | Donor Count |
-|-------|-----------------|----------|-------------|
-| Feb 2025 | 580,000 | 38% | 2,800 |
-| Mar 2025 | 620,000 | 41% | 3,100 |
-| Apr 2025 | 540,000 | 44% | 2,600 |
-| May 2025 | 510,000 | 42% | 2,400 |
-| Jun 2025 | 490,000 | 45% | 2,300 |
-| Jul 2025 | 470,000 | 43% | 2,200 |
-| Aug 2025 | 450,000 | 46% | 2,100 |
-| Sep 2025 | 560,000 | 44% | 2,700 |
-| Oct 2025 | 640,000 | 40% | 3,200 |
-| Nov 2025 | 780,000 | 48% | 3,800 |
-| Dec 2025 | 1,420,000 | 52% | 5,400 |
-| Jan 2026 | 680,000 | 47% | 3,100 |
-
-#### Donation Channel Mix
-
-| Channel | % of Income | Trend |
-|---------|------------|-------|
-| Direct Debit / Standing Order | 34% | Stable |
-| Online (website) | 22% | Growing (+12% YoY) |
-| Direct Mail | 18% | Declining (−6% YoY) |
-| Events & Galas | 8% | Stable |
-| Social Media / Peer-to-Peer | 6% | Growing (+24% YoY) |
-| Legacy / Bequest | 9% | Variable |
-| In-person / Cash | 3% | Declining (−15% YoY) |
-
 ### 5.3 Partnership Data
 
 #### Active Partnerships (47 total)
@@ -510,17 +484,6 @@ The scoring model uses four weighted dimensions:
 - 60–74: Silver (adequate, identify improvement areas)
 - Below 60: Bronze (at-risk, intervention needed)
 
-#### Partnership Funding by Type (annual)
-
-| Type | Count | Total Funding | Avg Score |
-|------|-------|--------------|-----------|
-| Corporate Sponsors | 18 | £1,420,000 | 79 |
-| Grant Funders | 8 | £1,640,000 | 86 |
-| Statutory Bodies | 7 | £1,280,000 | 78 |
-| Trusts & Foundations | 9 | £680,000 | 84 |
-| Academic Partners | 3 | £185,000 | 72 |
-| Community Partners | 2 | £45,000 | 68 |
-
 ### 5.4 Operations Data
 
 #### Volunteer Workforce
@@ -533,16 +496,6 @@ The scoring model uses four weighted dimensions:
 | Total volunteer hours (annual) | 142,000 |
 | Average hours per volunteer/month | 9.5 |
 | Volunteer satisfaction score | 8.4/10 |
-
-#### Volunteer Hours by Programme
-
-| Programme | Volunteers | Monthly Hours | Utilisation Rate |
-|-----------|-----------|--------------|-----------------|
-| Safe Homes | 380 | 4,200 | 86% |
-| Future Foundations | 420 | 4,800 | 82% |
-| Community Wellbeing | 310 | 2,600 | 78% |
-| Fundraising Events | 95 | 580 | 92% |
-| Administration | 42 | 320 | 88% |
 
 #### Service Demand Data (Monthly)
 
@@ -560,29 +513,6 @@ The scoring model uses four weighted dimensions:
 | Nov 2025 | 2,680 | 5,960 | 95% |
 | Dec 2025 | 2,840 | 6,280 | 100% |
 | Jan 2026 | 2,720 | 6,040 | 97% |
-
-#### 7-Day Service Demand Forecast
-
-| Day | Predicted Sessions | Confidence | Upper Bound | Lower Bound |
-|-----|-------------------|------------|-------------|-------------|
-| Mon | 198 | 84% | 218 | 178 |
-| Tue | 205 | 82% | 228 | 182 |
-| Wed | 212 | 81% | 238 | 186 |
-| Thu | 195 | 83% | 216 | 174 |
-| Fri | 188 | 85% | 206 | 170 |
-| Sat | 142 | 78% | 168 | 116 |
-| Sun | 98 | 76% | 122 | 74 |
-
-#### Resource Allocation
-
-| Resource | Available | Deployed | Utilisation |
-|----------|-----------|----------|-------------|
-| Paid staff (FTE) | 186 | 172 | 92% |
-| Active volunteers | 1,247 | 1,068 | 86% |
-| Service centres | 34 | 31 active | 91% |
-| Emergency beds | 120 | 108 occupied | 90% |
-| Counselling slots/week | 280 | 248 booked | 89% |
-| Training places/month | 180 | 156 filled | 87% |
 
 #### Beneficiary Outcomes (Annual)
 
@@ -605,13 +535,13 @@ The scoring model uses four weighted dimensions:
 
 **Hero Section:**
 - **Title:** "Not-For-Profit Data Analytics & AI" with gradient text on "Data Analytics & AI"
-- **Subtitle:** "Data-driven insights for fundraising optimisation, partnership intelligence, and operational excellence — built on Microsoft Azure & Fabric for charities and social enterprises."
+- **Subtitle:** "Data-driven insights for fundraising optimisation, partnership intelligence, and operational excellence — built on Microsoft Azure & Fabric for charities and social enterprises. This demo uses synthetic data for the fictional charity Hope & Compass to showcase our solutions."
 - **Hero stats** (4 boxes):
   - £12.4M Total Income
   - 62% Donor Retention
   - 47 Active Partnerships
   - 28,450 Beneficiaries Served
-- **Hero visualisation** (right column): A summary doughnut chart or key metric card showing income breakdown by source, with a "Synthetic demo data" live indicator
+- **Hero visualisation** (right column): Income breakdown doughnut chart (Individual Giving, Grants & Trusts, Corporate, Events, Trading) with a "Synthetic demo data" live indicator
 
 **KPI Row (5 cards):**
 
@@ -629,8 +559,14 @@ The scoring model uses four weighted dimensions:
 |-------|------|------|-------------|
 | Income Trends (12 Months) | Line chart (multi-series) | span7 | Monthly income split by Donations, Grants, Earned income |
 | Income Source Mix | Doughnut chart | span5 | Individual, Corporate, Trusts, Statutory, Legacy, Earned |
-| Programme Impact | Horizontal bar chart | span5 | Beneficiary outcomes by programme vs target |
-| Financial Health | Radar chart | span7 | 6 dimensions: Income Growth, Donor Retention, Reserve Months, Overhead Ratio, Programme Spend, Fundraising ROI |
+| Programme Impact | Horizontal bar chart (`indexAxis:'y'`) | span5 | Beneficiary outcomes by programme vs target |
+| Financial Health | Radar chart | span7 | 6 dimensions: Income Growth, Donor Retention, Fundraising Efficiency, Data Maturity, Impact Delivery, Financial Resilience |
+
+**Chart defaults (applied globally):**
+- Legend position: bottom
+- Legend labels: `usePointStyle:true`, `pointStyle:'circle'`, `padding:12`
+- Point style: circle (all charts)
+- Font: Silka, 11px, colour `#64748B`
 
 ### 6.2 Dashboard Page — Fundraising & Engagement
 
@@ -639,7 +575,7 @@ The scoring model uses four weighted dimensions:
 **Filters:**
 - Time period: Last 3 months / 6 months / 12 months / All time
 - Campaign: All / Winter Appeal / Spring Gala / Big Give / etc.
-- Toggle: "Show donor segments" (overlays segmentation colouring on charts)
+- Toggle: "Show segments" (switches segmentation doughnut between count and value view)
 
 **KPI Row (5 cards):**
 
@@ -656,11 +592,11 @@ The scoring model uses four weighted dimensions:
 | Chart | Type | Span | Data |
 |-------|------|------|------|
 | Monthly Donation Trend | Line chart with area fill | span7 | 12-month donations with prior year comparison line |
-| Donor Segmentation | Doughnut chart | span5 | Major / Mid-level / Regular / One-time / Lapsed segments by count and value |
-| Campaign Performance | Grouped bar chart | span8 | Income, cost, and ROI per campaign |
-| Donation Channel Mix | Horizontal bar chart | span4 | % of income by channel with YoY trend arrows |
-| Donor Retention Cohort | Stacked area chart | span6 | Retention curves by acquisition year cohort |
-| Donor Lifetime Value by Segment | Bar chart | span6 | Average 3-year LTV per segment |
+| Donor Segmentation | Doughnut chart | span5 | Major / Mid-level / Regular / One-time / Lapsed segments by count (toggle to value) |
+| Campaign Performance | Grouped bar chart | span8 | Income and cost per campaign |
+| Donation Channel Mix | Pie chart | span4 | Online, Direct Mail, Events, Major Gifts, Phone |
+| Donor Retention Cohort | Stacked area chart | span6 | 3 cohorts (2021, 2022, 2023) showing retention over 5 years |
+| Donor Lifetime Value by Segment | Horizontal bar chart (`indexAxis:'y'`) | span6 | Average 3-year LTV per segment |
 
 **Additional elements:**
 - **Donor segment table** below charts: Sortable table showing each segment with count, avg gift, retention rate, LTV, growth trend
@@ -673,7 +609,6 @@ The scoring model uses four weighted dimensions:
 **Filters:**
 - Partnership type: All / Corporate / Grant Funder / Statutory / Trust / Academic / Community
 - Health band: All / Platinum / Gold / Silver / Bronze
-- Toggle: "Show funding view" (switches between health score and funding value)
 
 **KPI Row (5 cards):**
 
@@ -689,15 +624,15 @@ The scoring model uses four weighted dimensions:
 
 | Chart | Type | Span | Data |
 |-------|------|------|------|
-| Partnership Health Distribution | Horizontal bar / histogram | span7 | Count of partners in each health band (Platinum/Gold/Silver/Bronze) |
+| Partnership Health Distribution | Bar chart | span7 | Count of partners in each health band (Platinum/Gold/Silver/Bronze) |
 | Funding by Partner Type | Doughnut chart | span5 | Breakdown by Corporate/Grant/Statutory/Trust/Academic/Community |
-| Funding Trend (12 Months) | Stacked bar chart | span7 | Monthly funding received by partner type |
+| Funding Trend (12 Months) | Line chart (multi-series) | span7 | Monthly funding by Corporate, Grants, Statutory |
 | Partnership Scoring Radar | Radar chart | span5 | Overlay of top 3 partners across 4 scoring dimensions |
-| Collaboration Activity | Calendar heatmap or line chart | span12 | Weekly count of meetings, joint initiatives, communications |
+| Collaboration Activity | Stacked bar chart | span12 | Monthly count of meetings and communications |
 
 **Additional elements:**
 - **Partnership ranking table**: Sortable by health score, funding, type — showing name, type, annual value, health score, trend, status badge
-- **At-risk alert panel**: Highlighted cards for the 4 at-risk partnerships with recommended actions
+- **At-risk alert panel**: Highlighted cards for at-risk partnerships with recommended actions
 
 ### 6.4 Dashboard Page — Operations & Volunteers
 
@@ -706,7 +641,8 @@ The scoring model uses four weighted dimensions:
 **Filters:**
 - Programme: All / Safe Homes / Future Foundations / Community Wellbeing
 - Region: All / Leeds / Manchester / Newcastle / Sheffield
-- Toggle: "Show forecast" (overlays predicted demand on service charts)
+
+**Note:** Forecast is always displayed (no toggle — showing forecast data is always valuable).
 
 **KPI Row (5 cards):**
 
@@ -722,16 +658,16 @@ The scoring model uses four weighted dimensions:
 
 | Chart | Type | Span | Data |
 |-------|------|------|------|
-| Service Demand Trend & Forecast | Line chart with confidence band | span7 | 12-month historical + 3-month forecast with 95% CI shading |
+| Service Demand Trend & Forecast | Line chart with confidence band | span7 | 12-month historical + 3-month forecast with 95% CI shading (always visible) |
 | Volunteer Hours by Programme | Stacked bar chart | span5 | Monthly volunteer hours split by programme |
-| 7-Day Demand Forecast | Forecast card grid (7 cards) | span12 | Mirroring Police Hotspot forecast layout — day, predicted sessions, confidence %, CI range |
-| Resource Utilisation | Horizontal bar chart | span6 | Staff, volunteers, centres, beds, slots — available vs deployed |
-| Beneficiary Outcomes vs Targets | Grouped bar chart | span6 | Each outcome area: target bar vs actual bar with % achievement |
+| 7-Day Demand Forecast | Forecast card grid (7 cards) | span12 | Day, predicted sessions, confidence %, CI range |
+| Resource Utilisation | Horizontal bar chart (`indexAxis:'y'`) | span6 | Staff, volunteers, centres, beds, slots — available vs deployed |
+| Beneficiary Outcomes vs Targets | Horizontal bar chart (`indexAxis:'y'`) | span6 | Each outcome area: target bar vs actual bar |
 | Volunteer Retention Trend | Line chart | span6 | Monthly retention rate over 12 months |
-| Service Coverage Map | Leaflet map | span6 | 34 service delivery locations across Northern England with markers sized by beneficiary volume |
+| Service Coverage Map | Leaflet map | span6 | 34 service delivery locations with circle markers sized by beneficiary volume |
 
 **Additional elements:**
-- **Demand drivers callout box**: Explaining seasonal factors (winter demand spike, school holidays, economic indicators) that affect the forecasting model — similar to the Koper Curve evidence box in the Police demo
+- **Demand drivers callout box**: Explaining seasonal factors (winter demand spike, school holidays, economic indicators, universal credit payment cycles) that affect the forecasting model
 
 ### 6.5 Dashboard Page — Benchmarks & Comparison
 
@@ -739,7 +675,6 @@ The scoring model uses four weighted dimensions:
 
 **Controls:**
 - Benchmark source selector: NCVO Almanac / AAW Fundraising / M+R Digital / Charity Digital
-- Organisation size filter: All / Tier 1 (<£500k) / Tier 2 (£500k–£15m) / Tier 3 (>£15m)
 
 **Charts:**
 
@@ -747,20 +682,8 @@ The scoring model uses four weighted dimensions:
 |-------|------|------|------|
 | KPI Benchmark Comparison | Grouped bar chart | span7 | Hope & Compass vs Sector Average vs Top Quartile for key metrics |
 | Data Maturity Assessment | Radar chart | span5 | 7 Data Orchard dimensions: Data, Tools, Leadership, Skills, Culture, Uses, Analysis |
-| Fundraising Efficiency Scatter | Scatter plot | span6 | Cost per £ raised (x) vs donor retention (y), one dot per benchmark org, Hope & Compass highlighted |
+| Fundraising Efficiency Scatter | Scatter plot | span6 | Cost per £ raised (x) vs donor retention (y), Hope & Compass highlighted as larger circle |
 | Income Diversification | Stacked bar chart | span6 | Income source mix for Hope & Compass vs 3 peer organisations |
-
-**Benchmark data points for comparison:**
-
-| Metric | Hope & Compass | Sector Avg | Top Quartile |
-|--------|---------------|-----------|--------------|
-| Donor Retention | 62% | 40% | 68% |
-| Cost per £ Raised | £0.22 | £0.25 | £0.18 |
-| Fundraising ROI | 4.5:1 | 4.0:1 | 5.2:1 |
-| Online Revenue % | 45% | 32% | 55% |
-| Volunteer Retention | 71% | 58% | 78% |
-| Overhead Ratio | 29% | 31% | 24% |
-| Reserve Months | 4.2 | 3.6 | 6.0 |
 
 **Data Maturity scores (Data Orchard framework, 1–5 scale):**
 
@@ -786,68 +709,46 @@ The scoring model uses four weighted dimensions:
 
 **Synthetic Insights (9 total, 3 per vertical):**
 
-**Fundraising:**
-
-| Priority | Insight |
-|----------|---------|
-| Critical | **Lapsed donor re-activation opportunity:** 4,150 lapsed donors identified. Predictive model estimates 8.2% re-activation rate with personalised email sequence, projecting £153,000 additional income. Recommended: launch segmented re-engagement campaign within 30 days. |
-| High | **Regular giving upgrade potential:** 380 regular givers have been at the same monthly amount for 24+ months. Propensity model suggests 42% would respond to a personalised upgrade ask, with average uplift of £8/month. Projected annual impact: £14,400. |
-| Medium | **Digital channel shift:** Online donations grew 12% YoY while direct mail declined 6%. Recommend reallocating 15% of direct mail budget to digital acquisition. Projected improvement: +£62,000 net income at lower cost per acquisition. |
-
-**Partnerships:**
-
-| Priority | Insight |
-|----------|---------|
-| High | **At-risk partnership alert:** University of Leeds partnership (Health Score 64, down 14 points in 6 months) shows declining engagement frequency and missed project milestones. Recommended: schedule strategic review meeting within 2 weeks. |
-| High | **Corporate pipeline opportunity:** Scoring model identifies 12 FTSE 350 companies with strong CSR alignment to homelessness and youth development. 3 have existing community programmes in Northern England. Recommended: initiate outreach to top 5 scored prospects. |
-| Medium | **Grant renewal preparation:** National Lottery Community Fund grant (£520,000) due for renewal in Q3 2026. Historical data shows 78% renewal rate for similar grants. Recommend starting impact report preparation 4 months ahead. |
-
-**Operations:**
-
-| Priority | Insight |
-|----------|---------|
-| Critical | **Winter demand surge predicted:** Forecasting model predicts 28% increase in service demand over the next 8 weeks based on seasonal patterns, weather forecasts, and economic indicators. Current capacity utilisation at 97%. Recommended: activate surge volunteer recruitment and partner referral pathways. |
-| High | **Volunteer burnout risk:** 42 volunteers have logged 20+ hours/week for 3+ consecutive months. Retention model flags these as high burnout risk (68% probability of departure within 90 days). Recommended: implement wellness check-ins and schedule relief rotations. |
-| Medium | **Service delivery gap in Sheffield:** Demand-to-capacity ratio in Sheffield region is 1.4x vs 0.9x in other regions. Travel time analysis shows 18% of Sheffield beneficiaries travel 40+ minutes to reach services. Recommended: evaluate satellite service point or mobile delivery model. |
+*(See Section 6.6 insights in original spec — all 9 insights are implemented as specified)*
 
 ### 6.7 Solutions Page
 
 **Purpose:** Present Simpson Associates' NFP offerings as a solutions catalogue, aligned to Microsoft technology.
 
-**Page hero:** "Our Not-For-Profit Solutions" — subtitle about purpose-built analytics and AI for charities.
+**Page hero:** "Our Not-For-Profit Solutions"
 
 **Solution cards (6, in 3×2 grid):**
 
-| # | Title | Icon Colour | Description | Stats |
-|---|-------|------------|-------------|-------|
-| 1 | Fundraising Analytics Platform | Blue | Donor data integration, segmentation, and personalisation model with real-time campaign dashboards. Built on Microsoft Fabric and Power BI. | "62%" Avg retention uplift, "4.5:1" Fundraising ROI |
-| 2 | Partnership Intelligence Suite | Purple | Central repository for partnership data with AI-powered scoring model. Track collaboration health, funding trends, and strategic alignment. | "47" Partners scored, "91%" Project completion |
-| 3 | Operational Efficiency Platform | Teal | Volunteer data integration, service demand forecasting, and resource allocation. Predict and plan for demand surges with ML models. | "86%" Volunteer utilisation, "84%" Forecast accuracy |
-| 4 | Nonprofit Data Accelerator | Amber | Pre-configured Azure + Fabric data platform with CDM for Nonprofits. Medallion lakehouse (Bronze/Silver/Gold) with pre-built pipelines and semantic models. | "90+" CDM entities, "3" Data tiers |
-| 5 | AI & Advanced Analytics | Red | Donor propensity models, partnership scoring, demand forecasting, beneficiary outcome prediction. Built on Azure ML and integrated with Power BI. | "9" AI models, "84%" Avg accuracy |
-| 6 | Data Strategy & Governance | Green | Data maturity assessment, operating model design, GDPR compliance frameworks, and SORP 2026 reporting alignment for charities. | "7" Maturity dimensions, "3" SORP tiers |
+| # | Title | Description | Stats |
+|---|-------|-------------|-------|
+| 1 | Fundraising Analytics Platform | Donor data integration, segmentation, and personalisation model with real-time campaign dashboards. Built on Microsoft Fabric and Power BI. | "62%" Avg retention uplift, "4.5:1" Fundraising ROI |
+| 2 | Partnership Intelligence Suite | Central repository for partnership data with AI-powered scoring model. | "47" Partners scored, "91%" Project completion |
+| 3 | Operational Efficiency Platform | Volunteer data integration, service demand forecasting, and resource allocation. | "86%" Volunteer utilisation, "84%" Forecast accuracy |
+| 4 | Nonprofit Data Accelerator | Pre-configured Azure + Fabric data platform with CDM for Nonprofits. Medallion lakehouse. | "90+" CDM entities, "3" Data tiers |
+| 5 | AI & Advanced Analytics | Donor propensity models, partnership scoring, demand forecasting. Built on Azure ML. | "9" AI models, "84%" Avg accuracy |
+| 6 | Data Strategy & Governance | Data maturity assessment, GDPR compliance, SORP 2026 reporting alignment. | "7" Maturity dimensions, "3" SORP tiers |
 
 ### 6.8 Case Studies Page
 
-**Purpose:** Showcase (synthetic) examples of Simpson Associates delivering value in the NFP sector.
+**Purpose:** Showcase real Simpson Associates case studies relevant to the NFP and social impact sector.
 
 **Case study cards (4, in 2×2 grid):**
 
-| # | Title | Gradient | Description | Metrics | Tag |
-|---|-------|----------|-------------|---------|-----|
-| 1 | National Homelessness Charity: Fundraising Transformation | SA gradient (purple→blue) | Built a unified donor data platform integrating 5 source systems. Delivered segmentation model that increased donor retention by 18% and average gift by 12% in the first year. | "18%" Retention uplift, "5" Systems unified | Data Platform |
-| 2 | Regional Youth Trust: Partnership Intelligence | Blue gradient | Centralised partnership data from 3 disconnected systems. Partnership scoring model identified 8 at-risk relationships and 15 new pipeline opportunities, resulting in £340k additional funding. | "£340k" New funding, "23" Partners scored | AI Analytics |
-| 3 | Community Services Network: Operational Analytics | Red→navy gradient | Deployed demand forecasting model for a network of 28 service centres. Reduced unmet demand by 22% through predictive volunteer scheduling and resource pre-positioning. | "22%" Demand met improvement, "28" Centres covered | Forecasting |
-| 4 | Multi-Charity Data Consortium: Shared Analytics Platform | Green→navy gradient | Co-developed a shared data platform for 6 charities on Microsoft Fabric. Medallion lakehouse architecture with CDM for Nonprofits. Enabled cross-organisation benchmarking while maintaining data sovereignty. | "6" Charities, "£2.1M" Combined insight value | Cloud Platform |
+| # | Client | Description | Metrics | Tag |
+|---|--------|-------------|---------|-----|
+| 1 | **British Heart Foundation** | Databricks Data Intelligence Platform on Azure. Unified research data across national defibrillator network and RevivR CPR training app. H3 spatial indexing reduced analysis from 3+ days to 6 minutes. | "75%" Faster analysis, "1.5bn" Rows ingested | Data Platform |
+| 2 | **Alzheimer's Society** | Azure Synapse and Power BI volunteer insights platform. Unified fragmented volunteer data across multiple systems for data-driven recruitment and retention. | "Unified" Volunteer view, "800k" People supported | Volunteer Analytics |
+| 3 | **Commissioning Alliance** | Azure data warehouse serving 66 local authorities. Centralised SSDA903 children's social care data with Power BI self-service reporting. | "66" Local authorities, "SSDA903" Data unified | Data Platform |
+| 4 | **Flagship Group** | Modern Data Analytics Assessment for 32,000-home housing association. Microsoft Fabric and medallion architecture roadmap with Purview governance. | "32,000" Homes managed, "Fabric" Roadmap | Strategy |
 
 ### 6.9 Contact Page
 
 **Purpose:** Lead generation and demo booking.
 
 **Left column — Form:**
-- Name (text input)
-- Email (email input)
-- Organisation (text input)
+- Name (text input, required)
+- Email (email input, required)
+- Organisation (text input, required)
 - Organisation type (select: Charity / Social Enterprise / Foundation / Housing Association / NHS/Public Sector / Other)
 - Area of interest (select: Fundraising Analytics / Partnership Intelligence / Operational Efficiency / Data Platform / AI & Advanced Analytics / Data Strategy / Full Suite Demo)
 - Message (textarea)
@@ -870,6 +771,7 @@ The scoring model uses four weighted dimensions:
 - Active tab gets `active` class with blue background
 - Page content shows/hides via `.page.active` toggling
 - Function: `showPage(pageId, tabElement)`
+- On mobile (≤700px), the "NFP Demo" tag is hidden and the nav is scrollable
 
 ### 7.2 Dashboard Panel Navigation
 
@@ -884,17 +786,20 @@ The scoring model uses four weighted dimensions:
 - **Select dropdowns** (`.fsel`) filter the data displayed in charts and tables
 - Filters trigger chart data updates via Chart.js `.update()` method
 - Filter state is local to each panel (not shared across panels)
+- Chart references are obtained at invocation time via `Chart.getChart()` (deferred lookup for lazy init compatibility)
 
 ### 7.4 Toggle Switches
 
-- **Toggle controls** (`.toggle`) switch between alternate views (e.g., "Show forecast", "Show donor segments")
-- Toggles trigger chart reconfiguration — changing datasets, colours, or chart type
-- Smooth transition via Chart.js animation
+- **Toggle controls** (`.toggle`) are div-based elements that toggle an `.on` class on click
+- Visual: 44×24px with white circle that slides right when active, background changes from grey (`--g300`) to blue (`--blue`)
+- Smooth 0.3s CSS transition
+- Toggles trigger chart reconfiguration — changing datasets, labels, or display options
 
 ### 7.5 Chart Interactivity
 
 - **Hover tooltips** on all Chart.js charts showing exact values
 - **Legend click** to show/hide individual datasets
+- **Legend markers**: small filled circles (`usePointStyle:true`, `pointStyle:'circle'`) on all charts
 - **Responsive resizing** via Chart.js `responsive: true, maintainAspectRatio: false`
 - Consistent Chart.js configuration: no title (titles handled by card headers), matching font family, matching colour palette
 
@@ -906,11 +811,11 @@ The scoring model uses four weighted dimensions:
 
 ### 7.7 Map Interaction (Operations)
 
-- **Leaflet map** with OpenStreetMap tiles
-- Markers for each of the 34 service delivery locations
+- **Leaflet map** with CARTO Light tiles
+- Circle markers for each of the 34 service delivery locations
 - Marker size proportional to beneficiary volume
-- Click marker for popup with location name, programme, beneficiary count, capacity %
-- Map bounds auto-fit to Northern England region
+- Click marker for popup with location name and beneficiary count
+- Map centred on Northern England (lat 53.8, lng -1.55, zoom 7)
 
 ---
 
@@ -923,9 +828,9 @@ Following the Police Hotspot Landing Page breakpoints:
 | Component | Adaptation |
 |-----------|-----------|
 | Hero grid | Collapses to single column |
-| KPI row | Changes from 5-column to 3-column |
+| KPI row | Changes to 2-column |
 | Chart grid spans | All collapse to span 12 (full width) |
-| Solution/insight grids | Collapse to single column |
+| Solution/insight grids | Collapse to 2-column |
 | Case study grid | Collapses to single column |
 | Contact grid | Collapses to single column |
 | Hero stats | Changes from 4-column to 2-column |
@@ -934,88 +839,47 @@ Following the Police Hotspot Landing Page breakpoints:
 
 | Component | Adaptation |
 |-----------|-----------|
-| Hero title | Reduces from 3.2rem to 2rem |
+| Hero title | Reduces from 3.2rem to 1.5rem |
 | KPI row | Collapses to single column |
-| Forecast card grid | Changes from 7-column to 4-column |
-| Resource grid | Collapses to single column |
-| Hero stats | Collapses to single column |
-| Top nav | Hidden (logo and demo tag remain) |
+| Forecast card grid | Changes from 7-column to 2-column |
+| Demo tag | Hidden |
+| Top nav | Compact with scrollable overflow |
+| Header | Reduced height (56px) and padding |
+| Solutions/case studies grids | Single column |
+| Insight grid | Single column |
 
 ---
 
 ## 9. Alignment to TSI GTM Strategy
 
-This table maps every element of the demo application back to the TSI GTM framework:
-
-### Vertical 1: Fundraising (Revenue)
-
-| GTM Layer | GTM Item | Demo Implementation |
-|-----------|----------|-------------------|
-| Connect | Donor Data Integration | Hero stats show unified donor data from multiple sources. Solutions page describes 5-system integration. |
-| Analyse | Donor Segmentation & Personalisation Model | Fundraising tab shows segmentation doughnut, retention cohorts, LTV by segment. AI Insights show propensity models. |
-| Consume | Fundraising & Engagement Dashboard | Full Fundraising tab with KPIs, trend charts, campaign performance, channel mix. |
-
-### Vertical 2: Partnerships (Reach)
-
-| GTM Layer | GTM Item | Demo Implementation |
-|-----------|----------|-------------------|
-| Connect | Partnership Data Centralisation | Partnership tab shows unified view of 47 partners from multiple systems. Solutions page describes centralisation. |
-| Analyse | Partnership Scoring Model | Partnership tab shows health scores, radar overlay, 4-dimension scoring breakdown. AI Insights show at-risk alerts and pipeline scoring. |
-| Consume | Partnership Monitoring Dashboard | Full Partnership tab with KPIs, health distribution, funding trends, ranking table. |
-
-### Vertical 3: Operations (Cost)
-
-| GTM Layer | GTM Item | Demo Implementation |
-|-----------|----------|-------------------|
-| Connect | Volunteer Data Integration | Operations tab shows unified volunteer data. Solutions page describes multi-system integration. |
-| Analyse | Service Demand Forecasting Model | Operations tab shows 12-month trend with forecast overlay, 7-day forecast cards with confidence intervals. AI Insights show demand surge prediction. |
-| Consume | Operational Management Dashboard | Full Operations tab with KPIs, resource utilisation, beneficiary outcomes, coverage map. |
-
-### Foundational Capabilities
-
-| Foundation | Demo Implementation |
-|-----------|-------------------|
-| Data Strategy & Operating Model | Benchmarks tab: data maturity radar chart |
-| AI Readiness & Analytic Maturity | AI Insights tab: 9 AI-generated recommendations |
-| Cloud Infrastructure Foundations | Solutions page: Nonprofit Data Accelerator card (Azure + Fabric) |
-| Management & Governance Principles | Solutions page: Data Strategy & Governance card |
-| Advanced Analytics & AI Capabilities | Solutions page: AI & Advanced Analytics card |
-| Training, Enablement & Knowledge Share | Case Studies page: knowledge transfer referenced |
+*(Unchanged from v1.0 — all GTM alignment items are implemented as specified)*
 
 ---
 
 ## 10. Microsoft Technology Alignment
 
-The demo explicitly references and aligns to Microsoft's nonprofit technology stack:
-
-| Microsoft Offering | Demo Reference | Location |
-|-------------------|----------------|----------|
-| Common Data Model for Nonprofits (90+ entities) | Solutions page "Nonprofit Data Accelerator" card references CDM. Footer mentions CDM. | Solutions page, footer |
-| Microsoft Fabric (Medallion lakehouse) | Solutions page describes Bronze/Silver/Gold architecture. Case study #4 details shared lakehouse deployment. | Solutions page, Case Studies |
-| Power BI | Fundraising, Partnership, and Operations dashboards are described as "Power BI-style" interactive dashboards. | All dashboard tabs |
-| Azure | Solutions page references Azure ML for AI models. Contact page references Azure hosting. Footer states "Built on Microsoft Azure & Fabric". | Solutions page, footer |
-| Power Apps (Fundraising, Volunteer Management) | Solutions page Fundraising Analytics and Operational Efficiency cards reference Power Apps integration. | Solutions page |
-| Power Pages (Volunteer Engagement portal) | Solutions page Operational Efficiency card mentions volunteer self-service portal. | Solutions page |
-| Fundraising Performance Dashboard (Power BI template) | The Fundraising tab mirrors and extends the metrics from Microsoft's template (revenue performance, donor profiles, campaign outcomes). | Fundraising tab |
-| Program Impact Dashboard (Power BI template) | The Executive Summary tab mirrors Microsoft's approach of interrelating fundraising and programme data. | Executive Summary tab |
-| Azure Landing Zone for Nonprofits | Solutions page Data Strategy card references secure cloud setup. | Solutions page |
+*(Unchanged from v1.0 — all Microsoft technology references are implemented as specified)*
 
 ---
 
 ## 11. Implementation Phases
 
-### Phase 1: Core Application (Current Scope)
+### Phase 1: Core Application (Complete)
 
 **Deliverable:** Single HTML file (`index.html`) with all CSS, JS, and synthetic data inline.
 
-**Includes:**
+**Implemented:**
 - All 4 pages (Dashboard, Solutions, Case Studies, Contact)
 - All 6 dashboard panels with full interactivity
 - All charts, tables, maps, and filters
+- Lazy chart initialisation (charts created on first panel view)
+- Functional toggle switches and filter controls
+- Sortable data tables
+- Contact form validation
+- 47 partner dataset
+- Real Simpson Associates case studies
 - Responsive design at 1100px and 700px breakpoints
 - Simpson Associates branding (Silka font, colour system, logo SVG)
-
-**Estimated effort:** Follows the patterns established by the Police Hotspot Landing Page (1,354 lines). The NFP demo will be comparable in complexity given 3 verticals vs 7 sub-panels, with additional chart types and the partnership scoring model.
 
 ### Phase 2: Enhancements (Future)
 
@@ -1045,11 +909,8 @@ The demo explicitly references and aligns to Microsoft's nonprofit technology st
 | SORP | Statement of Recommended Practice — UK charity accounting standard |
 | LTV | Lifetime Value — total projected giving from a donor over the relationship |
 | CAC | Cost of Acquisition — cost to acquire a new donor |
-| NTE | Night-Time Economy — relevant to service demand patterns |
-| IATI | International Aid Transparency Initiative — reporting standard |
 | SROI | Social Return on Investment — social impact measurement framework |
 | TOMs | Themes, Outcomes and Measures — standardised social value framework |
-| IMD | Index of Multiple Deprivation — UK government deprivation measure |
 
 ### B. Data Sources for Benchmarks
 
@@ -1062,7 +923,6 @@ The demo explicitly references and aligns to Microsoft's nonprofit technology st
 | Data Orchard Data Maturity Framework | dataorchard.org.uk | Data maturity dimensions and sector averages |
 | Charity Digital Skills Report 2024 | charitydigital.org.uk | Data prioritisation statistics |
 | Teque Research | teque.co.uk | CRM adoption, donor retention benchmarks |
-| Charity Accounting Partners | charityaccountingpartners.co.uk | Fundraising KPI definitions |
 
 ### C. Simpson Associates Branding Assets
 
@@ -1072,14 +932,3 @@ The demo explicitly references and aligns to Microsoft's nonprofit technology st
 | Logo SVG | Inline in header (391.04 × 97.15 viewBox) |
 | Brand gradient | linear-gradient(-37deg, #8876E4 0%, #1E8BC8 98%) |
 | Colour palette | CSS custom properties as documented in Section 4.2 |
-
-### D. File Naming Convention
-
-| File | Purpose |
-|------|---------|
-| `index.html` | Main demo application |
-| `SPECIFICATION.md` | This document |
-| `CLAUDE.md` | AI assistant guide |
-| `README.md` | Project readme |
-| `TSI GTM.pdf` | Original GTM strategy document (reference) |
-| `Police Hotspot Landing Page.html` | Design reference (existing demo) |
