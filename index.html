@@ -153,12 +153,10 @@ a:hover{text-decoration:underline}
 .filters label{font-size:.72rem;color:var(--g500);font-weight:500;text-transform:uppercase;letter-spacing:.03em}
 .fsel{font-family:inherit;font-size:.78rem;padding:.4rem .7rem;border:1px solid var(--g200);border-radius:6px;background:#fff;color:var(--navy);cursor:pointer;outline:none}
 .fsel:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(44,131,211,.12)}
-.toggle{position:relative;display:inline-block;width:36px;height:20px}
-.toggle input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--g300);border-radius:20px;transition:.3s}
-.slider::before{content:'';position:absolute;height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.toggle input:checked+.slider{background:var(--blue)}
-.toggle input:checked+.slider::before{transform:translateX(16px)}
+.toggle{position:relative;width:44px;height:24px;background:var(--g300);border-radius:12px;cursor:pointer;transition:.3s;flex-shrink:0}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle.on::after{transform:translateX(20px)}
 
 /* ── Data Table ────────────────────────────────────────── */
 .table-scroll{overflow-x:auto;padding:0 1.25rem 1.25rem}
@@ -260,12 +258,9 @@ a:hover{text-decoration:underline}
 .filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 
 /* ── Toggle Switch ──────────────────────────────────────── */
-.toggle-wrap{display:flex;align-items:center;gap:.5rem}
-.toggle{position:relative;width:36px;height:20px;background:var(--g300);border-radius:20px;cursor:pointer;transition:background .2s;flex-shrink:0}
-.toggle.on{background:var(--blue)}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.toggle.on::after{transform:translateX(16px)}
-.toggle-label{font-size:.75rem;color:var(--g600)}
+.toggle-wrap{display:flex;align-items:center;gap:.5rem;margin-left:auto}
+.toggle-wrap>label{font-size:.8rem;color:var(--g500);font-weight:500}
+.toggle-label{font-size:.8rem;color:var(--g500);font-weight:500}
 
 /* ── Map Container ──────────────────────────────────────── */
 .map-wrap{border-radius:var(--radius);overflow:hidden;height:400px;border:1px solid var(--g200)}
@@ -532,7 +527,7 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="frPeriod"><option value="12">Last 12 Months</option><option value="6">Last 6 Months</option><option value="3">Last 3 Months</option><option value="all">All Time</option></select>
                 <label>Campaign:</label>
                 <select class="fsel" id="frCampaign"><option value="all">All Campaigns</option><option value="winter">Winter Appeal 2025</option><option value="gala">Spring Gala</option><option value="biggive">Big Give Christmas</option><option value="emergency">Emergency Housing Appeal</option><option value="youth">Youth Futures Campaign</option><option value="legacy">Legacy Giving Programme</option><option value="corporate">Corporate Partnerships</option><option value="regular">Regular Giving Acquisition</option></select>
-                <div class="toggle-wrap"><label>Show segments</label><label class="toggle"><input type="checkbox" id="frSegToggle"><span class="slider"></span></label></div>
+                <div class="toggle-wrap"><label>Show segments</label><div class="toggle" id="frSegToggle"></div></div>
             </div>
 
             <!-- KPI Row -->
@@ -604,7 +599,7 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="ptType"><option value="all">All Types</option><option value="corporate">Corporate Sponsor</option><option value="grant">Grant Funder</option><option value="statutory">Statutory</option><option value="trust">Trust/Foundation</option><option value="academic">Academic</option><option value="community">Community</option></select>
                 <label>Health:</label>
                 <select class="fsel" id="ptHealth"><option value="all">All Bands</option><option value="platinum">Platinum (90-100)</option><option value="gold">Gold (75-89)</option><option value="silver">Silver (60-74)</option><option value="bronze">Bronze (&lt;60)</option></select>
-                <div class="toggle-wrap"><label>Show funding view</label><label class="toggle"><input type="checkbox" id="ptFundToggle"><span class="slider"></span></label></div>
+                <div class="toggle-wrap"><label>Show funding view</label><div class="toggle" id="ptFundToggle"></div></div>
             </div>
 
             <!-- KPI Row -->
@@ -668,8 +663,7 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="opProg"><option value="all">All Programmes</option><option value="safehomes">Safe Homes</option><option value="futures">Future Foundations</option><option value="wellbeing">Community Wellbeing</option></select>
                 <label>Region:</label>
                 <select class="fsel" id="opRegion"><option value="all">All Regions</option><option value="leeds">Leeds</option><option value="manchester">Manchester</option><option value="newcastle">Newcastle</option><option value="sheffield">Sheffield</option></select>
-                <div class="toggle-wrap"><label>Show forecast</label><label class="toggle"><input type="checkbox" id="opForecastToggle"><span class="slider"></span></label></div>
-            </div>
+                            </div>
 
             <!-- KPI Row -->
             <div class="kpi-row">
@@ -1303,9 +1297,10 @@ if(frPeriod){
 /* Fundraising segment toggle — switch between count and value view */
 const frSegToggle=document.getElementById('frSegToggle');
 if(frSegToggle){
-    frSegToggle.addEventListener('change',function(){
+    frSegToggle.addEventListener('click',function(){
+        this.classList.toggle('on');
         const ch=Chart.getChart('frSegChart');if(!ch)return;
-        if(this.checked){
+        if(this.classList.contains('on')){
             ch.data.datasets[0].data=[521000,683700,1474000,401400,0];
             ch.data.labels=['Major (£)','Mid-Level (£)','Regular (£)','One-time (£)','Lapsed (£)'];
         }else{
@@ -1346,22 +1341,13 @@ if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
 /* Partnership funding toggle */
 const ptFundToggle=document.getElementById('ptFundToggle');
 if(ptFundToggle){
-    ptFundToggle.addEventListener('change',function(){
+    ptFundToggle.addEventListener('click',function(){
+        this.classList.toggle('on');
         const ch=Chart.getChart('ptTrendChart');if(!ch)return;
         ch.data.datasets.forEach(ds=>{
-            if(this.checked){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
+            if(this.classList.contains('on')){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
             else{ds.fill=false;ds.backgroundColor='transparent';}
         });
-        ch.update();
-    });
-}
-/* Operations forecast toggle */
-const opForecastToggle=document.getElementById('opForecastToggle');
-if(opForecastToggle){
-    opForecastToggle.addEventListener('change',function(){
-        const ch=Chart.getChart('opDemandChart');if(!ch)return;
-        const show=this.checked;
-        [1,2,3].forEach(i=>{ch.data.datasets[i].hidden=!show;});
         ch.update();
     });
 }
