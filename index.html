@@ -166,6 +166,10 @@ a:hover{text-decoration:underline}
 .data-table th{text-align:left;font-weight:600;color:var(--g500);text-transform:uppercase;font-size:.68rem;letter-spacing:.04em;padding:.6rem .75rem;border-bottom:2px solid var(--g200);white-space:nowrap}
 .data-table td{padding:.65rem .75rem;border-bottom:1px solid var(--g100);color:var(--navy);vertical-align:middle}
 .data-table tr:hover td{background:rgba(44,131,211,.03)}
+.data-table th{cursor:pointer;user-select:none;transition:color .2s}
+.data-table th:hover{color:var(--blue)}
+.data-table th.sort-asc::after{content:' ▲';font-size:.6rem;color:var(--blue)}
+.data-table th.sort-desc::after{content:' ▼';font-size:.6rem;color:var(--blue)}
 .font-bold{font-weight:600}
 .mono{font-family:'JetBrains Mono','Silka',monospace;font-weight:500}
 
@@ -1229,6 +1233,184 @@ const aiV=document.getElementById('aiVertical');
 const aiP=document.getElementById('aiPriority');
 if(aiV)aiV.addEventListener('change',filterInsights);
 if(aiP)aiP.addEventListener('change',filterInsights);
+
+/* ═══════════════════════════════════════════════════════════
+   FUNDRAISING FILTERS
+   ═══════════════════════════════════════════════════════════ */
+const frTrendRef=Chart.getChart('frTrendChart');
+const frPeriod=document.getElementById('frPeriod');
+const frCampaign=document.getElementById('frCampaign');
+if(frPeriod&&frTrendRef){
+    const fullThisYr=[580,620,710,650,690,720,750,680,810,890,720,780];
+    const fullPriorYr=[520,560,640,610,630,660,680,620,740,800,680,710];
+    frPeriod.addEventListener('change',function(){
+        const n=this.value==='all'?12:parseInt(this.value);
+        frTrendRef.data.labels=MONTHS.slice(-n);
+        frTrendRef.data.datasets[0].data=fullThisYr.slice(-n);
+        frTrendRef.data.datasets[1].data=fullPriorYr.slice(-n);
+        frTrendRef.update();
+    });
+}
+/* Fundraising segment toggle */
+const frSegToggle=document.getElementById('frSegToggle');
+const frSegRef=Chart.getChart('frSegChart');
+if(frSegToggle&&frSegRef){
+    frSegToggle.addEventListener('change',function(){
+        if(this.checked){
+            frSegRef.data.datasets[0].data=[42,318,3840,8920,4150];
+            frSegRef.data.labels=['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'];
+        }else{
+            frSegRef.data.datasets[0].data=[42,318,3840,8920,4150];
+            frSegRef.data.labels=['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'];
+        }
+        frSegRef.update();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PARTNERSHIPS FILTERS
+   ═══════════════════════════════════════════════════════════ */
+const ptType=document.getElementById('ptType');
+const ptHealth=document.getElementById('ptHealth');
+if(ptType||ptHealth){
+    function filterPartnerTable(){
+        const t=ptType?ptType.value:'all';
+        const h=ptHealth?ptHealth.value:'all';
+        const rows=document.querySelectorAll('#partnerTableBody tr');
+        rows.forEach(row=>{
+            const cells=row.querySelectorAll('td');
+            if(cells.length<6)return;
+            const type=cells[1].textContent.trim();
+            const score=parseInt(cells[3].textContent);
+            const statusText=cells[5].textContent.trim().toLowerCase();
+            let showType=t==='all';
+            if(t==='corporate')showType=type==='Corporate';
+            if(t==='grant')showType=type==='Grant Funder';
+            if(t==='statutory')showType=type==='Statutory';
+            if(t==='trust')showType=type.includes('Trust')||type.includes('Foundation');
+            if(t==='academic')showType=type==='Academic';
+            if(t==='community')showType=type==='Community';
+            let showHealth=h==='all';
+            if(h==='platinum')showHealth=score>=90;
+            if(h==='gold')showHealth=score>=75&&score<90;
+            if(h==='silver')showHealth=score>=60&&score<75;
+            if(h==='bronze')showHealth=score<60;
+            row.style.display=(showType&&showHealth)?'':'none';
+        });
+    }
+    if(ptType)ptType.addEventListener('change',filterPartnerTable);
+    if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
+}
+/* Partnership funding toggle */
+const ptFundToggle=document.getElementById('ptFundToggle');
+const ptTrendRef=Chart.getChart('ptTrendChart');
+if(ptFundToggle&&ptTrendRef){
+    ptFundToggle.addEventListener('change',function(){
+        if(this.checked){
+            ptTrendRef.data.datasets.forEach(ds=>{ds.fill=true;ds.backgroundColor=ds.borderColor+'20';});
+        }else{
+            ptTrendRef.data.datasets.forEach(ds=>{ds.fill=false;ds.backgroundColor='transparent';});
+        }
+        ptTrendRef.update();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OPERATIONS FILTERS
+   ═══════════════════════════════════════════════════════════ */
+const opForecastToggle=document.getElementById('opForecastToggle');
+const opDemandRef=Chart.getChart('opDemandChart');
+if(opForecastToggle&&opDemandRef){
+    opForecastToggle.addEventListener('change',function(){
+        if(this.checked){
+            opDemandRef.data.datasets[1].hidden=false;
+            opDemandRef.data.datasets[2].hidden=false;
+            opDemandRef.data.datasets[3].hidden=false;
+        }else{
+            opDemandRef.data.datasets[1].hidden=true;
+            opDemandRef.data.datasets[2].hidden=true;
+            opDemandRef.data.datasets[3].hidden=true;
+        }
+        opDemandRef.update();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BENCHMARKS FILTERS
+   ═══════════════════════════════════════════════════════════ */
+const bmSource=document.getElementById('bmSource');
+const bmSize=document.getElementById('bmSize');
+const bmRef=Chart.getChart('bmCompareChart');
+if(bmSource&&bmRef){
+    bmSource.addEventListener('change',function(){
+        /* Simulate different benchmark sources by slightly varying sector avg */
+        const offsets={ncvo:[0,0,0,0,0,0],aaw:[2,-3,4,5,-2,1],mr:[-3,5,2,8,3,-2],'charity-digital':[4,2,-1,3,-4,3]};
+        const base=[40,75,67,58,58,69];
+        const off=offsets[this.value]||offsets.ncvo;
+        bmRef.data.datasets[1].data=base.map((v,i)=>v+off[i]);
+        bmRef.update();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABLE SORTING
+   ═══════════════════════════════════════════════════════════ */
+function makeSortable(tableId){
+    const table=document.getElementById(tableId);
+    if(!table)return;
+    const headers=table.querySelectorAll('th');
+    headers.forEach((th,colIdx)=>{
+        th.style.cursor='pointer';
+        th.title='Click to sort';
+        let asc=true;
+        th.addEventListener('click',function(){
+            const tbody=table.querySelector('tbody');
+            const rows=Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a,b)=>{
+                let aVal=a.children[colIdx]?.textContent.trim()||'';
+                let bVal=b.children[colIdx]?.textContent.trim()||'';
+                /* Try numeric comparison */
+                const aNum=parseFloat(aVal.replace(/[£,%k+\-—]/g,''));
+                const bNum=parseFloat(bVal.replace(/[£,%k+\-—]/g,''));
+                if(!isNaN(aNum)&&!isNaN(bNum)){
+                    return asc?aNum-bNum:bNum-aNum;
+                }
+                return asc?aVal.localeCompare(bVal):bVal.localeCompare(aVal);
+            });
+            rows.forEach(r=>tbody.appendChild(r));
+            /* Update sort indicator */
+            headers.forEach(h=>h.classList.remove('sort-asc','sort-desc'));
+            th.classList.add(asc?'sort-asc':'sort-desc');
+            asc=!asc;
+        });
+    });
+}
+makeSortable('donorTable');
+makeSortable('partnerTable');
+
+/* ═══════════════════════════════════════════════════════════
+   CONTACT FORM VALIDATION
+   ═══════════════════════════════════════════════════════════ */
+const cSubmit=document.getElementById('cSubmit');
+if(cSubmit){
+    cSubmit.addEventListener('click',function(e){
+        e.preventDefault();
+        const name=document.getElementById('cName');
+        const email=document.getElementById('cEmail');
+        const org=document.getElementById('cOrg');
+        let valid=true;
+        [name,email,org].forEach(f=>{
+            f.classList.remove('error');
+            if(!f.value.trim()){f.classList.add('error');valid=false;}
+        });
+        if(email&&email.value&&!email.value.includes('@')){email.classList.add('error');valid=false;}
+        if(valid){
+            alert('Thank you! Our not-for-profit team will be in touch within 24 hours.');
+            [name,email,org].forEach(f=>f.value='');
+            const msg=document.getElementById('cMsg');if(msg)msg.value='';
+        }
+    });
+}
 
 }); /* end DOMContentLoaded */
 </script>
