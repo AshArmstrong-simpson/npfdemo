@@ -739,7 +739,7 @@ a:hover{text-decoration:underline}
                     <div class="chart-box"><canvas id="bmCompareChart"></canvas></div>
                 </div>
                 <div class="card span5">
-                    <div class="card-header"><div><div class="card-title">Data Maturity Assessment</div><div class="card-sub">7 Data Orchard dimensions (1-5 scale)</div></div></div>
+                    <div class="card-header"><div><div class="card-title">Data Maturity Assessment</div><div class="card-sub">Data Orchard framework (1–5 scale)</div></div></div>
                     <div class="chart-box"><canvas id="bmMaturityChart"></canvas></div>
                 </div>
                 <div class="card span6">
@@ -1037,10 +1037,10 @@ if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','
 
 const fret=mkCtx('frRetentionChart');
 if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[
-    {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,tension:.3,pointRadius:4,borderWidth:2},
-    {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,tension:.3,pointRadius:3,borderWidth:1.5,borderDash:[5,5]},
-    {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,tension:.3,pointRadius:3,borderWidth:1.5,borderDash:[3,3]}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:0,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+    {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,backgroundColor:COLS.blue+'25',fill:true,tension:.3,pointRadius:4,borderWidth:2},
+    {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,backgroundColor:COLS.purple+'20',fill:true,tension:.3,pointRadius:3,borderWidth:1.5},
+    {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.3,pointRadius:3,borderWidth:1.5}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
 
 const fltv=mkCtx('frLTVChart');
 if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
@@ -1094,7 +1094,37 @@ const PARTNERS=[
     {name:'Tudor Trust',type:'Trust/Foundation',value:'£110,000',score:70,trend:'+1',status:'Silver'},
     {name:'University of Leeds',type:'Academic',value:'£45,000',score:64,trend:'-14',status:'Silver'},
     {name:'Sainsbury Foundation',type:'Corporate',value:'£55,000',score:58,trend:'-8',status:'Bronze'},
-    {name:'Community First',type:'Community',value:'£28,000',score:52,trend:'-5',status:'Bronze'}
+    {name:'Community First',type:'Community',value:'£28,000',score:52,trend:'-5',status:'Bronze'},
+    {name:'Esmée Fairbairn',type:'Trust/Foundation',value:'£140,000',score:90,trend:'+3',status:'Platinum'},
+    {name:'Henry Smith Charity',type:'Trust/Foundation',value:'£110,000',score:88,trend:'+2',status:'Gold'},
+    {name:'Nationwide Foundation',type:'Corporate',value:'£95,000',score:86,trend:'+1',status:'Gold'},
+    {name:'BBC Children in Need',type:'Grant Funder',value:'£75,000',score:85,trend:'+3',status:'Gold'},
+    {name:'Rank Foundation',type:'Trust/Foundation',value:'£68,000',score:83,trend:'0',status:'Gold'},
+    {name:'Sport England',type:'Statutory',value:'£145,000',score:82,trend:'+2',status:'Gold'},
+    {name:'Paul Hamlyn Foundation',type:'Trust/Foundation',value:'£90,000',score:81,trend:'+1',status:'Gold'},
+    {name:'Santander Foundation',type:'Corporate',value:'£42,000',score:80,trend:'+4',status:'Gold'},
+    {name:'NatWest Group',type:'Corporate',value:'£65,000',score:79,trend:'+1',status:'Gold'},
+    {name:'Comic Relief',type:'Grant Funder',value:'£120,000',score:78,trend:'-2',status:'Gold'},
+    {name:'Zurich Foundation',type:'Corporate',value:'£38,000',score:77,trend:'+3',status:'Gold'},
+    {name:'Power to Change',type:'Trust/Foundation',value:'£55,000',score:76,trend:'0',status:'Gold'},
+    {name:'Leeds Beckett Uni',type:'Academic',value:'£35,000',score:75,trend:'+2',status:'Gold'},
+    {name:'Bradford Metropolitan',type:'Statutory',value:'£160,000',score:73,trend:'-2',status:'Silver'},
+    {name:'Calderdale Council',type:'Statutory',value:'£85,000',score:72,trend:'+1',status:'Silver'},
+    {name:'Kirklees Council',type:'Statutory',value:'£78,000',score:71,trend:'-1',status:'Silver'},
+    {name:'Wakefield Council',type:'Statutory',value:'£62,000',score:70,trend:'0',status:'Silver'},
+    {name:'University of York',type:'Academic',value:'£48,000',score:69,trend:'+3',status:'Silver'},
+    {name:'Volant Charitable Trust',type:'Trust/Foundation',value:'£45,000',score:68,trend:'+1',status:'Silver'},
+    {name:'Tesco Community Grants',type:'Corporate',value:'£22,000',score:67,trend:'+2',status:'Silver'},
+    {name:'Asda Foundation',type:'Corporate',value:'£28,000',score:66,trend:'0',status:'Silver'},
+    {name:'Virgin Money Foundation',type:'Corporate',value:'£35,000',score:65,trend:'-1',status:'Silver'},
+    {name:'Sheffield CC',type:'Statutory',value:'£180,000',score:64,trend:'-3',status:'Silver'},
+    {name:'Wolfson Foundation',type:'Trust/Foundation',value:'£50,000',score:63,trend:'+2',status:'Silver'},
+    {name:'CHK Charities',type:'Trust/Foundation',value:'£30,000',score:62,trend:'-1',status:'Silver'},
+    {name:'Rotherham Council',type:'Statutory',value:'£55,000',score:61,trend:'-2',status:'Silver'},
+    {name:'Huddersfield Uni',type:'Academic',value:'£28,000',score:60,trend:'+1',status:'Silver'},
+    {name:'Morrisons Foundation',type:'Corporate',value:'£18,000',score:56,trend:'-4',status:'Bronze'},
+    {name:'Harrogate BC',type:'Statutory',value:'£22,000',score:54,trend:'-3',status:'Bronze'},
+    {name:'North Lincs Council',type:'Statutory',value:'£32,000',score:48,trend:'-6',status:'Bronze'}
 ];
 const ptb=document.getElementById('partnerTableBody');
 if(ptb)PARTNERS.forEach(p=>{
@@ -1209,9 +1239,9 @@ if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fu
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{position:'top'}}}});
 
 const bm=mkCtx('bmMaturityChart');
-if(bm)new Chart(bm,{type:'radar',data:{labels:['Data Leadership','Data Skills','Data Culture','Data Tools','Data Quality','Data Use','Data Governance'],datasets:[
-    {label:'Hope & Compass',data:[3.8,3.2,3.5,4.0,3.0,3.8,2.8],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
-    {label:'Sector Average',data:[2.4,2.1,2.3,2.8,2.0,2.5,1.9],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
+if(bm)new Chart(bm,{type:'radar',data:{labels:['Data','Tools','Leadership','Skills','Culture','Uses','Analysis'],datasets:[
+    {label:'Hope & Compass',data:[3.4,3.1,3.6,2.8,3.2,3.5,2.9],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
+    {label:'Sector Average',data:[2.8,2.5,2.9,2.4,2.7,2.6,2.3],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{position:'top'}}}});
 
 const bsc=mkCtx('bmScatterChart');
