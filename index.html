@@ -46,7 +46,7 @@ a:hover{text-decoration:underline}
 .header-left{display:flex;align-items:center;gap:1.5rem}
 .logo{height:36px;width:auto;flex-shrink:0}
 .demo-tag{background:var(--sa-gradient);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;white-space:nowrap}
-.top-nav{display:flex;gap:.25rem;align-items:center}
+.top-nav{display:flex;gap:.25rem;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .top-tab{background:none;border:none;color:rgba(255,255,255,.7);font-family:inherit;font-size:.85rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;cursor:pointer;transition:all .2s}
 .top-tab:hover{color:#fff;background:rgba(255,255,255,.08)}
 .top-tab.active{color:#fff;background:rgba(255,255,255,.12)}
@@ -390,8 +390,10 @@ a:hover{text-decoration:underline}
     .fc-grid{grid-template-columns:repeat(3,1fr)}
     .kpi-row{grid-template-columns:repeat(2,1fr)}
     .insight-grid{grid-template-columns:1fr}
-    .header{padding:0 1rem;height:56px}
-    .top-nav{gap:0}
+    .header{padding:0 1rem;height:56px;gap:.5rem}
+    .header-left{gap:.75rem}
+    .demo-tag{display:none}
+    .top-nav{gap:0;flex-shrink:0}
     .top-tab{font-size:.78rem;padding:.4rem .65rem}
     .hero-title{font-size:1.5rem}
     .hero-stats{grid-template-columns:1fr 1fr}
@@ -599,7 +601,6 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="ptType"><option value="all">All Types</option><option value="corporate">Corporate Sponsor</option><option value="grant">Grant Funder</option><option value="statutory">Statutory</option><option value="trust">Trust/Foundation</option><option value="academic">Academic</option><option value="community">Community</option></select>
                 <label>Health:</label>
                 <select class="fsel" id="ptHealth"><option value="all">All Bands</option><option value="platinum">Platinum (90-100)</option><option value="gold">Gold (75-89)</option><option value="silver">Silver (60-74)</option><option value="bronze">Bronze (&lt;60)</option></select>
-                <div class="toggle-wrap"><label>Show funding view</label><div class="toggle" id="ptFundToggle"></div></div>
             </div>
 
             <!-- KPI Row -->
@@ -1339,19 +1340,6 @@ function filterPartnerTable(){
 }
 if(ptType)ptType.addEventListener('change',filterPartnerTable);
 if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
-/* Partnership funding toggle */
-const ptFundToggle=document.getElementById('ptFundToggle');
-if(ptFundToggle){
-    ptFundToggle.addEventListener('click',function(){
-        this.classList.toggle('on');
-        const ch=Chart.getChart('ptTrendChart');if(!ch)return;
-        ch.data.datasets.forEach(ds=>{
-            if(this.classList.contains('on')){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
-            else{ds.fill=false;ds.backgroundColor='transparent';}
-        });
-        ch.update();
-    });
-}
 /* Benchmarks source filter */
 const bmSource=document.getElementById('bmSource');
 if(bmSource){
