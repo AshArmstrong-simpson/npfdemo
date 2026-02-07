@@ -242,7 +242,7 @@ a:hover{text-decoration:underline}
 .c-form .error{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(239,68,68,.1)!important}
 
 /* ── Chart Containers ───────────────────────────────────── */
-.chart-box{position:relative;width:100%;height:260px;padding:1rem 1.25rem}
+.chart-box{position:relative;width:100%;height:280px;padding:1rem 1.25rem}
 .chart-box.tall{height:340px}
 .chart-box.short{height:200px}
 .chart-box canvas{width:100%!important;height:100%!important}
@@ -959,9 +959,11 @@ document.querySelectorAll('.d-tab').forEach(tab=>{
 Chart.defaults.font.family="'Silka','Segoe UI',system-ui,sans-serif";
 Chart.defaults.font.size=11;
 Chart.defaults.color='#64748B';
+Chart.defaults.plugins.legend.position='bottom';
 Chart.defaults.plugins.legend.labels.usePointStyle=true;
+Chart.defaults.plugins.legend.labels.pointStyle='circle';
 Chart.defaults.plugins.legend.labels.pointStyleWidth=8;
-Chart.defaults.plugins.legend.labels.padding=14;
+Chart.defaults.plugins.legend.labels.padding=15;
 Chart.defaults.plugins.legend.labels.boxWidth=8;
 Chart.defaults.plugins.tooltip.backgroundColor='#2A4149';
 Chart.defaults.plugins.tooltip.cornerRadius=8;
@@ -990,22 +992,22 @@ if(et)new Chart(et,{type:'bar',data:{labels:MONTHS,datasets:[
     {label:'Donations',data:[580,620,710,650,690,720,750,680,810,890,720,780],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.7},
     {label:'Grants',data:[280,310,340,290,320,350,380,310,420,390,350,380],backgroundColor:COLS.purple,borderRadius:4,barPercentage:.7},
     {label:'Earned',data:[90,95,110,100,105,120,130,110,140,150,120,130],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.7}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const es=mkCtx('execSourceChart');
-if(es)new Chart(es,{type:'doughnut',data:{labels:['Individual Giving','Grants & Trusts','Corporate Sponsors','Events & Community','Trading & Earned'],datasets:[{data:[34,31,17,11,7],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{size:10}}}}}});
+if(es)new Chart(es,{type:'doughnut',data:{labels:['Individual Giving','Grants & Trusts','Corporate Sponsors','Events & Community','Trading & Earned'],datasets:[{data:[34,31,17,11,7],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{labels:{padding:12,font:{size:10}}}}}});
 
 const ei=mkCtx('execImpactChart');
 if(ei)new Chart(ei,{type:'bar',data:{labels:['Safe Homes','Future Foundations','Community Wellbeing','Youth Development','Mental Health'],datasets:[
     {label:'Actual',data:[92,78,88,71,85],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.65},
     {label:'Target',data:[85,80,90,75,80],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.65}
-]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{position:'top'}}}});
+]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
 
 const er=mkCtx('execRadarChart');
 if(er)new Chart(er,{type:'radar',data:{labels:['Income Growth','Donor Retention','Fundraising Efficiency','Data Maturity','Impact Delivery','Financial Resilience'],datasets:[
     {label:'Hope & Compass',data:[78,82,75,65,88,72],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
     {label:'Sector Average',data:[55,40,60,42,65,58],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{}}}});
 
 /* ═══════════════════════════════════════════════════════════
    FUNDRAISING CHARTS (lazy)
@@ -1015,26 +1017,26 @@ const ft=mkCtx('frTrendChart');
 if(ft)new Chart(ft,{type:'line',data:{labels:MONTHS,datasets:[
     {label:'This Year',data:[580,620,710,650,690,720,750,680,810,890,720,780],borderColor:COLS.blue,backgroundColor:COLS.blue+'15',fill:true,tension:.3,pointRadius:3,borderWidth:2},
     {label:'Prior Year',data:[520,560,640,610,630,660,680,620,740,800,680,710],borderColor:COLS.purple,backgroundColor:'transparent',borderDash:[5,5],tension:.3,pointRadius:2,borderWidth:1.5}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const fs=mkCtx('frSegChart');
-if(fs)new Chart(fs,{type:'doughnut',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'],datasets:[{data:[42,318,3840,8920,4150],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.red+'80'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:10}}}}}});
+if(fs)new Chart(fs,{type:'doughnut',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'],datasets:[{data:[42,318,3840,8920,4150],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.red+'80'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{labels:{padding:12,font:{size:10}}}}}});
 
 const fc=mkCtx('frCampaignChart');
 if(fc)new Chart(fc,{type:'bar',data:{labels:['Winter Appeal','Spring Gala','Big Give','Emergency','Youth Futures','Legacy','Corporate','Regular Giving'],datasets:[
     {label:'Income (£k)',data:[420,380,310,290,180,520,340,280],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.7},
     {label:'Cost (£k)',data:[62,85,38,42,28,18,52,45],backgroundColor:COLS.red+'60',borderRadius:4,barPercentage:.7}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const fch=mkCtx('frChannelChart');
-if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','Major Gifts','Phone'],datasets:[{data:[45,22,15,12,6],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}}}});
+if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','Major Gifts','Phone'],datasets:[{data:[45,22,15,12,6],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{padding:12,font:{size:10}}}}}});
 
 const fret=mkCtx('frRetentionChart');
 if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[
     {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,backgroundColor:COLS.blue+'25',fill:true,tension:.3,pointRadius:4,borderWidth:2},
     {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,backgroundColor:COLS.purple+'20',fill:true,tension:.3,pointRadius:3,borderWidth:1.5},
     {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.3,pointRadius:3,borderWidth:1.5}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{}}}});
 
 const fltv=mkCtx('frLTVChart');
 if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
@@ -1056,20 +1058,20 @@ if(ptt)new Chart(ptt,{type:'line',data:{labels:MONTHS,datasets:[
     {label:'Corporate',data:[140,155,160,150,165,170,180,165,195,210,175,190],borderColor:COLS.blue,fill:false,tension:.3,pointRadius:2,borderWidth:2},
     {label:'Grants',data:[85,90,100,95,105,110,115,100,125,120,110,115],borderColor:COLS.purple,fill:false,tension:.3,pointRadius:2,borderWidth:2},
     {label:'Statutory',data:[70,75,80,78,82,85,88,80,92,95,82,88],borderColor:COLS.teal,fill:false,tension:.3,pointRadius:2,borderWidth:2}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const ptr=mkCtx('ptRadarChart');
 if(ptr)new Chart(ptr,{type:'radar',data:{labels:['Funding Success','Project Success','Strategic Alignment','Collaboration Freq.'],datasets:[
     {label:'Barclays Foundation',data:[92,88,85,78],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
     {label:'National Lottery CF',data:[85,92,90,65],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',pointBackgroundColor:COLS.teal,pointRadius:3},
     {label:'Yorkshire Housing',data:[78,82,88,92],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{}}}});
 
 const pac=mkCtx('ptActivityChart');
 if(pac)new Chart(pac,{type:'bar',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23','W24'],datasets:[
     {label:'Meetings',data:[12,15,8,18,14,16,11,19,13,17,15,20,12,14,18,16,13,21,15,17,14,19,16,22],backgroundColor:COLS.blue,borderRadius:2,barPercentage:.8},
     {label:'Communications',data:[28,32,24,35,30,28,26,38,25,33,30,42,28,32,36,34,29,40,32,35,30,38,34,45],backgroundColor:COLS.purple+'60',borderRadius:2,barPercentage:.8}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}},y:{stacked:true,grid:{color:'#f0f0f0'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}},y:{stacked:true,grid:{color:'#f0f0f0'}}},plugins:{legend:{}}}});
 
 /* ── Partnership Table Data ──────────────────────────────── */
 const PARTNERS=[
@@ -1167,7 +1169,7 @@ if(ov)new Chart(ov,{type:'bar',data:{labels:MONTHS,datasets:[
     {label:'Safe Homes',data:[4200,4500,4800,4300,4600,4900,5200,4700,5500,6100,5300,5600],backgroundColor:COLS.blue,borderRadius:3,barPercentage:.75},
     {label:'Future Foundations',data:[2800,3000,3200,2900,3100,3300,3500,3200,3800,4000,3500,3700],backgroundColor:COLS.purple,borderRadius:3,barPercentage:.75},
     {label:'Community Wellbeing',data:[1800,1900,2000,1850,1950,2100,2200,2000,2400,2600,2200,2400],backgroundColor:COLS.teal,borderRadius:3,barPercentage:.75}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000).toFixed(0)+'k hrs'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000).toFixed(0)+'k hrs'}}},plugins:{legend:{}}}});
 
 /* ── 7-Day Forecast Cards ────────────────────────────────── */
 const ofg=document.getElementById('opForecastGrid');
@@ -1185,16 +1187,16 @@ const ores=mkCtx('opResourceChart');
 if(ores)new Chart(ores,{type:'bar',data:{labels:['Case Workers','Volunteers','Support Staff','Transport','Facilities'],datasets:[
     {label:'Available',data:[48,1247,32,12,8],backgroundColor:COLS.blue+'40',borderRadius:4,barPercentage:.55},
     {label:'Deployed',data:[45,1074,28,11,7],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.55}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'}}},plugins:{legend:{}}}});
 
 const oout=mkCtx('opOutcomeChart');
 if(oout)new Chart(oout,{type:'bar',data:{labels:['Housing Secured','Employment','Mental Health','Education','Family Reunion'],datasets:[
     {label:'Achieved',data:[92,68,85,78,88],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.55},
     {label:'Target',data:[85,75,80,80,85],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.55}
-]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{position:'top'}}}});
+]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
 
 const oret=mkCtx('opRetentionChart');
-if(oret)new Chart(oret,{type:'line',data:{labels:MONTHS,datasets:[{label:'Volunteer Retention %',data:[68,69,70,69,71,72,71,73,72,74,73,71],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:60,max:80,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+if(oret)new Chart(oret,{type:'line',data:{labels:MONTHS,datasets:[{label:'Volunteer Retention %',data:[68,69,70,69,71,72,71,73,72,74,73,71],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:60,max:80,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{}}}});
 
 /* ── Leaflet Map ─────────────────────────────────────────── */
 const mapEl=document.getElementById('opMap');
@@ -1230,13 +1232,13 @@ if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fu
     {label:'Hope & Compass',data:[62,78,75,82,71,71],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.6},
     {label:'Sector Average',data:[40,75,67,58,58,69],backgroundColor:COLS.purple+'60',borderRadius:4,barPercentage:.6},
     {label:'Top Quartile',data:[68,82,87,100,78,76],backgroundColor:COLS.teal+'60',borderRadius:4,barPercentage:.6}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{}}}});
 
 const bm=mkCtx('bmMaturityChart');
 if(bm)new Chart(bm,{type:'radar',data:{labels:['Data','Tools','Leadership','Skills','Culture','Uses','Analysis'],datasets:[
     {label:'Hope & Compass',data:[3.4,3.1,3.6,2.8,3.2,3.5,2.9],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
     {label:'Sector Average',data:[2.8,2.5,2.9,2.4,2.7,2.6,2.3],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{}}}});
 
 const bsc=mkCtx('bmScatterChart');
 if(bsc){
@@ -1245,7 +1247,7 @@ if(bsc){
         {label:'Hope & Compass',data:[{x:0.22,y:62}],backgroundColor:COLS.blue,pointRadius:8,pointStyle:'rectRot'},
         {label:'Peer Charities',data:gen(25,0.25,42,0.15),backgroundColor:COLS.purple+'50',pointRadius:4},
         {label:'Top Quartile',data:gen(8,0.18,68,0.06),backgroundColor:COLS.teal+'50',pointRadius:4}
-    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Cost per £ Raised'},grid:{color:'#f0f0f0'},min:0.1,max:0.4},y:{title:{display:true,text:'Donor Retention %'},grid:{color:'#f0f0f0'},min:20,max:80}},plugins:{legend:{position:'top'}}}});
+    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Cost per £ Raised'},grid:{color:'#f0f0f0'},min:0.1,max:0.4},y:{title:{display:true,text:'Donor Retention %'},grid:{color:'#f0f0f0'},min:20,max:80}},plugins:{legend:{}}}});
 }
 
 const bdv=mkCtx('bmDiversChart');
