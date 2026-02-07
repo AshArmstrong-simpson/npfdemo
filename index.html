@@ -968,6 +968,7 @@ Chart.defaults.plugins.legend.labels.boxWidth=8;
 Chart.defaults.plugins.tooltip.backgroundColor='#2A4149';
 Chart.defaults.plugins.tooltip.cornerRadius=8;
 Chart.defaults.plugins.tooltip.padding=10;
+Chart.defaults.elements.point.pointStyle='circle';
 const MONTHS=['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
 const COLS={blue:'#2C83D3',purple:'#8876E4',teal:'#10CA72',orange:'#F97316',amber:'#EAB308',red:'#EF4444',navy:'#2A4149'};
 function mkCtx(id){const c=document.getElementById(id);return c?c.getContext('2d'):null;}
@@ -1001,7 +1002,7 @@ const ei=mkCtx('execImpactChart');
 if(ei)new Chart(ei,{type:'bar',data:{labels:['Safe Homes','Future Foundations','Community Wellbeing','Youth Development','Mental Health'],datasets:[
     {label:'Actual',data:[92,78,88,71,85],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.65},
     {label:'Target',data:[85,80,90,75,80],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.65}
-]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
+]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
 
 const er=mkCtx('execRadarChart');
 if(er)new Chart(er,{type:'radar',data:{labels:['Income Growth','Donor Retention','Fundraising Efficiency','Data Maturity','Impact Delivery','Financial Resilience'],datasets:[
@@ -1039,7 +1040,7 @@ if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Ye
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{}}}});
 
 const fltv=mkCtx('frLTVChart');
-if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
+if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
 
 }; /* end _init_fundraising */
 
@@ -1193,7 +1194,7 @@ const oout=mkCtx('opOutcomeChart');
 if(oout)new Chart(oout,{type:'bar',data:{labels:['Housing Secured','Employment','Mental Health','Education','Family Reunion'],datasets:[
     {label:'Achieved',data:[92,68,85,78,88],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.55},
     {label:'Target',data:[85,75,80,80,85],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.55}
-]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
+]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
 
 const oret=mkCtx('opRetentionChart');
 if(oret)new Chart(oret,{type:'line',data:{labels:MONTHS,datasets:[{label:'Volunteer Retention %',data:[68,69,70,69,71,72,71,73,72,74,73,71],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:60,max:80,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{}}}});
@@ -1244,7 +1245,7 @@ const bsc=mkCtx('bmScatterChart');
 if(bsc){
     const gen=(n,cx,cy,sp)=>Array.from({length:n},()=>({x:cx+(Math.random()-.5)*sp,y:cy+(Math.random()-.5)*sp*1.5}));
     new Chart(bsc,{type:'scatter',data:{datasets:[
-        {label:'Hope & Compass',data:[{x:0.22,y:62}],backgroundColor:COLS.blue,pointRadius:8,pointStyle:'rectRot'},
+        {label:'Hope & Compass',data:[{x:0.22,y:62}],backgroundColor:COLS.blue,pointRadius:8,pointStyle:'circle'},
         {label:'Peer Charities',data:gen(25,0.25,42,0.15),backgroundColor:COLS.purple+'50',pointRadius:4},
         {label:'Top Quartile',data:gen(8,0.18,68,0.06),backgroundColor:COLS.teal+'50',pointRadius:4}
     ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Cost per £ Raised'},grid:{color:'#f0f0f0'},min:0.1,max:0.4},y:{title:{display:true,text:'Donor Retention %'},grid:{color:'#f0f0f0'},min:20,max:80}},plugins:{legend:{}}}});
