@@ -175,7 +175,7 @@ a:hover{text-decoration:underline}
 
 /* ── Insight Grid (AI Insights panel) - overrides base ─── */
 .panel .insight-panel{background:var(--navy);border-radius:var(--radius);padding:1.5rem;overflow:hidden}
-.insight-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1rem}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
 .insight-card{background:var(--navy-3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.15rem 1.25rem}
 .ins-badge{display:inline-block;font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;margin-right:.35rem}
 .ins-badge.crit{background:rgba(239,68,68,.15);color:#f87171}
@@ -236,6 +236,8 @@ a:hover{text-decoration:underline}
 .c-info-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.25rem}
 .c-info-card h3{font-size:.9rem;font-weight:600;color:var(--navy);margin-bottom:.35rem}
 .c-info-card p{font-size:.84rem;color:var(--g500);line-height:1.6}
+.req{color:var(--red);font-weight:600}
+.c-form .error{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(239,68,68,.1)!important}
 
 /* ── Chart Containers ───────────────────────────────────── */
 .chart-box{position:relative;width:100%;height:260px;padding:1rem 1.25rem}
@@ -374,12 +376,13 @@ a:hover{text-decoration:underline}
 ::-webkit-scrollbar-thumb:hover{background:var(--g400)}
 
 /* ── Responsive ─────────────────────────────────────────── */
-@media(max-width:1200px){
+@media(max-width:1100px){
     .g-8,.g-7,.g-9,.g-10,.span7,.span8{grid-column:span 12}
     .g-4,.g-5,.g-3,.g-2,.span4,.span5{grid-column:span 6}
     .fc-grid{grid-template-columns:repeat(4,1fr)}
+    .insight-grid{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:900px){
+@media(max-width:700px){
     .hero{grid-template-columns:1fr;padding:2rem 1.5rem 1.5rem}
     .hero-stats{grid-template-columns:repeat(2,1fr)}
     .hero-chart-card{max-width:380px}
@@ -387,8 +390,7 @@ a:hover{text-decoration:underline}
     .contact-grid{grid-template-columns:1fr}
     .fc-grid{grid-template-columns:repeat(3,1fr)}
     .kpi-row{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:640px){
+    .insight-grid{grid-template-columns:1fr}
     .header{padding:0 1rem;height:56px}
     .top-nav{gap:0}
     .top-tab{font-size:.78rem;padding:.4rem .65rem}
@@ -882,21 +884,31 @@ a:hover{text-decoration:underline}
     <div class="contact-grid">
         <div class="c-form">
             <h3 style="margin-bottom:1.2rem;font-size:1.15rem">Book a Demo</h3>
-            <label>Name</label><input type="text" placeholder="Your name">
-            <label>Email</label><input type="email" placeholder="your.email@charity.org.uk">
-            <label>Organisation</label><input type="text" placeholder="Your charity or social enterprise">
+            <label>Name <span class="req">*</span></label><input type="text" placeholder="Your name" id="cName" required>
+            <label>Email <span class="req">*</span></label><input type="email" placeholder="your.email@charity.org.uk" id="cEmail" required>
+            <label>Organisation <span class="req">*</span></label><input type="text" placeholder="Your charity or social enterprise" id="cOrg" required>
+            <label>Organisation Type</label>
+            <select id="cOrgType">
+                <option value="">Select type...</option>
+                <option>Charity</option>
+                <option>Social Enterprise</option>
+                <option>Foundation</option>
+                <option>Housing Association</option>
+                <option>NHS / Public Sector</option>
+                <option>Other</option>
+            </select>
             <label>Area of Interest</label>
-            <select>
-                <option>Fundraising Analytics Platform</option>
-                <option>Partnership Intelligence Suite</option>
-                <option>Operational Efficiency Platform</option>
-                <option>Nonprofit Data Accelerator</option>
+            <select id="cInterest">
+                <option>Fundraising Analytics</option>
+                <option>Partnership Intelligence</option>
+                <option>Operational Efficiency</option>
+                <option>Data Platform</option>
                 <option>AI &amp; Advanced Analytics</option>
-                <option>Data Strategy &amp; Governance</option>
+                <option>Data Strategy</option>
                 <option>Full Suite Demo</option>
             </select>
-            <label>Message</label><textarea placeholder="Tell us about your challenges or what you'd like to see in a demo..."></textarea>
-            <button class="c-btn" onclick="alert('Thank you! Our not-for-profit team will be in touch within 24 hours.')">Request Demo</button>
+            <label>Message</label><textarea placeholder="Tell us about your challenges or what you'd like to see in a demo..." id="cMsg"></textarea>
+            <button class="c-btn" id="cSubmit">Request Demo</button>
         </div>
         <div class="c-info">
             <div class="c-info-card"><h3>York Office</h3><p>Suite 3, 20 George Hudson Street, York YO1 6WR</p></div>
