@@ -946,12 +946,16 @@ function showPage(id,btn){
     if(btn)btn.classList.add('active');
     window.scrollTo(0,0);
 }
+const _panelInited={};
+function initPanel(id){if(_panelInited[id])return;_panelInited[id]=true;if(typeof window['_init_'+id]==='function')window['_init_'+id]();}
 document.querySelectorAll('.d-tab').forEach(tab=>{
     tab.addEventListener('click',function(){
         document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));
         document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
         this.classList.add('active');
-        document.getElementById(this.dataset.panel).classList.add('active');
+        const panelId=this.dataset.panel;
+        document.getElementById(panelId).classList.add('active');
+        initPanel(panelId);
     });
 });
 
@@ -976,6 +980,9 @@ function mkCtx(id){const c=document.getElementById(id);return c?c.getContext('2d
    INITIALIZATION
    ═══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',function(){
+
+/* Mark exec-summary as already initialised (default active panel) */
+_panelInited['exec-summary']=true;
 
 /* ── Hero Donut ──────────────────────────────────────────── */
 const hc=mkCtx('heroDonut');
@@ -1007,8 +1014,9 @@ if(er)new Chart(er,{type:'radar',data:{labels:['Income Growth','Donor Retention'
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
 
 /* ═══════════════════════════════════════════════════════════
-   FUNDRAISING CHARTS
+   FUNDRAISING CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_fundraising=function(){
 const ft=mkCtx('frTrendChart');
 if(ft)new Chart(ft,{type:'line',data:{labels:MONTHS,datasets:[
     {label:'This Year',data:[580,620,710,650,690,720,750,680,810,890,720,780],borderColor:COLS.blue,backgroundColor:COLS.blue+'15',fill:true,tension:.3,pointRadius:3,borderWidth:2},
@@ -1037,9 +1045,12 @@ if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Ye
 const fltv=mkCtx('frLTVChart');
 if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
 
+}; /* end _init_fundraising */
+
 /* ═══════════════════════════════════════════════════════════
-   PARTNERSHIP CHARTS
+   PARTNERSHIP CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_partnerships=function(){
 const ph=mkCtx('ptHealthChart');
 if(ph)new Chart(ph,{type:'bar',data:{labels:['Platinum (90-100)','Gold (75-89)','Silver (60-74)','Bronze (<60)'],datasets:[{label:'Partners',data:[8,18,15,6],backgroundColor:[COLS.teal,COLS.blue,COLS.amber,COLS.red+'80'],borderRadius:4,barPercentage:.55}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},beginAtZero:true}},plugins:{legend:{display:false}}}});
 
@@ -1106,9 +1117,12 @@ if(arg){
     });
 }
 
+}; /* end _init_partnerships */
+
 /* ═══════════════════════════════════════════════════════════
-   OPERATIONS CHARTS
+   OPERATIONS CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_operations=function(){
 const od=mkCtx('opDemandChart');
 if(od){
     const hist=[2100,2250,2400,2180,2320,2500,2650,2450,2800,3100,2700,2900];
@@ -1181,9 +1195,12 @@ if(mapEl){
     });
 }
 
+}; /* end _init_operations */
+
 /* ═══════════════════════════════════════════════════════════
-   BENCHMARKS CHARTS
+   BENCHMARKS CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_benchmarks=function(){
 const bc=mkCtx('bmCompareChart');
 if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fundraising ROI','Online Rev %','Vol. Retention','Overhead Ratio'],datasets:[
     {label:'Hope & Compass',data:[62,78,75,82,71,71],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.6},
@@ -1216,6 +1233,8 @@ if(bdv)new Chart(bdv,{type:'bar',data:{labels:['Hope & Compass','Sector Average'
     {label:'Trading/Earned',data:[7,8,13],backgroundColor:COLS.amber,barPercentage:.7}
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}});
 
+}; /* end _init_benchmarks */
+
 /* ═══════════════════════════════════════════════════════════
    AI INSIGHTS FILTERING
    ═══════════════════════════════════════════════════════════ */
@@ -1235,120 +1254,97 @@ if(aiV)aiV.addEventListener('change',filterInsights);
 if(aiP)aiP.addEventListener('change',filterInsights);
 
 /* ═══════════════════════════════════════════════════════════
-   FUNDRAISING FILTERS
+   PANEL FILTERS & TOGGLES (deferred chart lookups)
    ═══════════════════════════════════════════════════════════ */
-const frTrendRef=Chart.getChart('frTrendChart');
+/* Fundraising period filter */
 const frPeriod=document.getElementById('frPeriod');
-const frCampaign=document.getElementById('frCampaign');
-if(frPeriod&&frTrendRef){
+if(frPeriod){
     const fullThisYr=[580,620,710,650,690,720,750,680,810,890,720,780];
     const fullPriorYr=[520,560,640,610,630,660,680,620,740,800,680,710];
     frPeriod.addEventListener('change',function(){
+        const ch=Chart.getChart('frTrendChart');if(!ch)return;
         const n=this.value==='all'?12:parseInt(this.value);
-        frTrendRef.data.labels=MONTHS.slice(-n);
-        frTrendRef.data.datasets[0].data=fullThisYr.slice(-n);
-        frTrendRef.data.datasets[1].data=fullPriorYr.slice(-n);
-        frTrendRef.update();
+        ch.data.labels=MONTHS.slice(-n);
+        ch.data.datasets[0].data=fullThisYr.slice(-n);
+        ch.data.datasets[1].data=fullPriorYr.slice(-n);
+        ch.update();
     });
 }
-/* Fundraising segment toggle */
+/* Fundraising segment toggle — switch between count and value view */
 const frSegToggle=document.getElementById('frSegToggle');
-const frSegRef=Chart.getChart('frSegChart');
-if(frSegToggle&&frSegRef){
+if(frSegToggle){
     frSegToggle.addEventListener('change',function(){
+        const ch=Chart.getChart('frSegChart');if(!ch)return;
         if(this.checked){
-            frSegRef.data.datasets[0].data=[42,318,3840,8920,4150];
-            frSegRef.data.labels=['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'];
+            ch.data.datasets[0].data=[521000,683700,1474000,401400,0];
+            ch.data.labels=['Major (£)','Mid-Level (£)','Regular (£)','One-time (£)','Lapsed (£)'];
         }else{
-            frSegRef.data.datasets[0].data=[42,318,3840,8920,4150];
-            frSegRef.data.labels=['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'];
+            ch.data.datasets[0].data=[42,318,3840,8920,4150];
+            ch.data.labels=['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'];
         }
-        frSegRef.update();
+        ch.update();
     });
 }
-
-/* ═══════════════════════════════════════════════════════════
-   PARTNERSHIPS FILTERS
-   ═══════════════════════════════════════════════════════════ */
+/* Partnership table filters */
 const ptType=document.getElementById('ptType');
 const ptHealth=document.getElementById('ptHealth');
-if(ptType||ptHealth){
-    function filterPartnerTable(){
-        const t=ptType?ptType.value:'all';
-        const h=ptHealth?ptHealth.value:'all';
-        const rows=document.querySelectorAll('#partnerTableBody tr');
-        rows.forEach(row=>{
-            const cells=row.querySelectorAll('td');
-            if(cells.length<6)return;
-            const type=cells[1].textContent.trim();
-            const score=parseInt(cells[3].textContent);
-            const statusText=cells[5].textContent.trim().toLowerCase();
-            let showType=t==='all';
-            if(t==='corporate')showType=type==='Corporate';
-            if(t==='grant')showType=type==='Grant Funder';
-            if(t==='statutory')showType=type==='Statutory';
-            if(t==='trust')showType=type.includes('Trust')||type.includes('Foundation');
-            if(t==='academic')showType=type==='Academic';
-            if(t==='community')showType=type==='Community';
-            let showHealth=h==='all';
-            if(h==='platinum')showHealth=score>=90;
-            if(h==='gold')showHealth=score>=75&&score<90;
-            if(h==='silver')showHealth=score>=60&&score<75;
-            if(h==='bronze')showHealth=score<60;
-            row.style.display=(showType&&showHealth)?'':'none';
-        });
-    }
-    if(ptType)ptType.addEventListener('change',filterPartnerTable);
-    if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
+function filterPartnerTable(){
+    const t=ptType?ptType.value:'all';
+    const h=ptHealth?ptHealth.value:'all';
+    document.querySelectorAll('#partnerTableBody tr').forEach(row=>{
+        const cells=row.querySelectorAll('td');
+        if(cells.length<6)return;
+        const type=cells[1].textContent.trim();
+        const score=parseInt(cells[3].textContent);
+        let showType=t==='all';
+        if(t==='corporate')showType=type==='Corporate';
+        if(t==='grant')showType=type==='Grant Funder';
+        if(t==='statutory')showType=type==='Statutory';
+        if(t==='trust')showType=type.includes('Trust')||type.includes('Foundation');
+        if(t==='academic')showType=type==='Academic';
+        if(t==='community')showType=type==='Community';
+        let showHealth=h==='all';
+        if(h==='platinum')showHealth=score>=90;
+        if(h==='gold')showHealth=score>=75&&score<90;
+        if(h==='silver')showHealth=score>=60&&score<75;
+        if(h==='bronze')showHealth=score<60;
+        row.style.display=(showType&&showHealth)?'':'none';
+    });
 }
+if(ptType)ptType.addEventListener('change',filterPartnerTable);
+if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
 /* Partnership funding toggle */
 const ptFundToggle=document.getElementById('ptFundToggle');
-const ptTrendRef=Chart.getChart('ptTrendChart');
-if(ptFundToggle&&ptTrendRef){
+if(ptFundToggle){
     ptFundToggle.addEventListener('change',function(){
-        if(this.checked){
-            ptTrendRef.data.datasets.forEach(ds=>{ds.fill=true;ds.backgroundColor=ds.borderColor+'20';});
-        }else{
-            ptTrendRef.data.datasets.forEach(ds=>{ds.fill=false;ds.backgroundColor='transparent';});
-        }
-        ptTrendRef.update();
+        const ch=Chart.getChart('ptTrendChart');if(!ch)return;
+        ch.data.datasets.forEach(ds=>{
+            if(this.checked){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
+            else{ds.fill=false;ds.backgroundColor='transparent';}
+        });
+        ch.update();
     });
 }
-
-/* ═══════════════════════════════════════════════════════════
-   OPERATIONS FILTERS
-   ═══════════════════════════════════════════════════════════ */
+/* Operations forecast toggle */
 const opForecastToggle=document.getElementById('opForecastToggle');
-const opDemandRef=Chart.getChart('opDemandChart');
-if(opForecastToggle&&opDemandRef){
+if(opForecastToggle){
     opForecastToggle.addEventListener('change',function(){
-        if(this.checked){
-            opDemandRef.data.datasets[1].hidden=false;
-            opDemandRef.data.datasets[2].hidden=false;
-            opDemandRef.data.datasets[3].hidden=false;
-        }else{
-            opDemandRef.data.datasets[1].hidden=true;
-            opDemandRef.data.datasets[2].hidden=true;
-            opDemandRef.data.datasets[3].hidden=true;
-        }
-        opDemandRef.update();
+        const ch=Chart.getChart('opDemandChart');if(!ch)return;
+        const show=this.checked;
+        [1,2,3].forEach(i=>{ch.data.datasets[i].hidden=!show;});
+        ch.update();
     });
 }
-
-/* ═══════════════════════════════════════════════════════════
-   BENCHMARKS FILTERS
-   ═══════════════════════════════════════════════════════════ */
+/* Benchmarks source filter */
 const bmSource=document.getElementById('bmSource');
-const bmSize=document.getElementById('bmSize');
-const bmRef=Chart.getChart('bmCompareChart');
-if(bmSource&&bmRef){
+if(bmSource){
     bmSource.addEventListener('change',function(){
-        /* Simulate different benchmark sources by slightly varying sector avg */
+        const ch=Chart.getChart('bmCompareChart');if(!ch)return;
         const offsets={ncvo:[0,0,0,0,0,0],aaw:[2,-3,4,5,-2,1],mr:[-3,5,2,8,3,-2],'charity-digital':[4,2,-1,3,-4,3]};
         const base=[40,75,67,58,58,69];
         const off=offsets[this.value]||offsets.ncvo;
-        bmRef.data.datasets[1].data=base.map((v,i)=>v+off[i]);
-        bmRef.update();
+        ch.data.datasets[1].data=base.map((v,i)=>v+off[i]);
+        ch.update();
     });
 }
 
