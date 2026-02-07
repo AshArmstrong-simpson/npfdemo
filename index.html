@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Simpson Associates — Not-For-Profit Data Analytics &amp; AI Demo</title>
+<meta name="description" content="Data-driven insights for fundraising optimisation, partnership intelligence, and operational excellence — built on Microsoft Azure &amp; Fabric for charities and social enterprises.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+/* ── Font Faces ─────────────────────────────────────────── */
+@font-face{font-family:'Silka';src:url('https://www.simpson-associates.co.uk/wp-content/themes/simpsons2024/assets/fonts/optimised/Silka-Regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Silka';src:url('https://www.simpson-associates.co.uk/wp-content/themes/simpsons2024/assets/fonts/optimised/Silka-Medium.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Silka';src:url('https://www.simpson-associates.co.uk/wp-content/themes/simpsons2024/assets/fonts/optimised/Silka-SemiBold.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Silka';src:url('https://www.simpson-associates.co.uk/wp-content/themes/simpsons2024/assets/fonts/optimised/Silka-Bold.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Silka';src:url('https://www.simpson-associates.co.uk/wp-content/themes/simpsons2024/assets/fonts/optimised/Silka-RegularItalic.woff2') format('woff2');font-weight:400;font-style:italic;font-display:swap}
+
+/* ── CSS Variables ──────────────────────────────────────── */
+:root{
+    --navy:#2A4149;--navy-2:#22353C;--navy-3:#2E4A53;
+    --blue:#2C83D3;--blue-d:#226A92;--blue-l:#5BA8E6;
+    --teal:#10CA72;--teal-l:#3DD98D;
+    --purple:#8876E4;--red:#EF4444;--orange:#F97316;--amber:#EAB308;--green:#10CA72;
+    --g50:#F3F1ED;--g100:#EBE9E4;--g200:#E5E5E5;--g300:#CBD5E1;
+    --g400:#979797;--g500:#64748B;--g600:#475569;--g700:#334155;--g800:#22353C;--g900:#2A4149;
+    --sa-gradient:linear-gradient(-37deg,#8876E4 0%,#1E8BC8 98%);
+    --radius:10px;
+    --shadow:0 1px 3px rgba(42,65,73,.06),0 4px 12px rgba(42,65,73,.05);
+    --shadow-lg:0 8px 30px rgba(42,65,73,.1);
+}
+
+/* ── Reset & Base ───────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Silka','Segoe UI',system-ui,-apple-system,sans-serif;background:var(--g50);color:var(--navy);line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+img,svg{display:block;max-width:100%}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header{background:var(--navy);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.header-left{display:flex;align-items:center;gap:1.5rem}
+.logo{height:36px;width:auto;flex-shrink:0}
+.demo-tag{background:var(--sa-gradient);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.top-nav{display:flex;gap:.25rem;align-items:center}
+.top-tab{background:none;border:none;color:rgba(255,255,255,.7);font-family:inherit;font-size:.85rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;cursor:pointer;transition:all .2s}
+.top-tab:hover{color:#fff;background:rgba(255,255,255,.08)}
+.top-tab.active{color:#fff;background:rgba(255,255,255,.12)}
+
+/* ── Pages ──────────────────────────────────────────────── */
+.page{display:none}
+.page.active{display:block}
+
+/* ── Hero ───────────────────────────────────────────────── */
+.hero{background:var(--navy);padding:2.5rem 2rem 2rem;display:grid;grid-template-columns:1fr 380px;gap:2.5rem;align-items:start}
+.hero-title{font-size:2.1rem;font-weight:700;color:#fff;line-height:1.25;margin-bottom:.75rem}
+.hero-title .grad{background:var(--sa-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:rgba(255,255,255,.7);font-size:.95rem;line-height:1.65;max-width:620px;margin-bottom:1.5rem}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.hero-stat{background:var(--navy-3);border-radius:var(--radius);padding:.85rem 1rem;text-align:center;border:1px solid rgba(255,255,255,.06)}
+.hero-stat-value{font-size:1.35rem;font-weight:700;color:#fff;font-family:'JetBrains Mono','Silka',monospace}
+.hero-stat-label{font-size:.7rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.04em;margin-top:.15rem}
+
+/* Hero chart card */
+.hero-chart-card{background:var(--navy-3);border-radius:var(--radius);padding:1.25rem;border:1px solid rgba(255,255,255,.06)}
+.hero-chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.hero-chart-title{color:#fff;font-size:.85rem;font-weight:600}
+.live-dot{display:flex;align-items:center;gap:.4rem;font-size:.65rem;color:rgba(255,255,255,.5)}
+.live-dot::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-chart-wrap{position:relative;width:200px;height:200px;margin:0 auto}
+.hero-chart-legend{display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:1rem}
+.legend-item{display:flex;align-items:center;gap:.35rem;font-size:.7rem;color:rgba(255,255,255,.65)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── Page Hero (Solutions, Case Studies, Contact) ────────── */
+.pg-hero{background:var(--navy);padding:3rem 2rem 2.5rem;text-align:center}
+.pg-hero h1{font-size:2rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+.pg-hero p{color:rgba(255,255,255,.65);font-size:1rem;max-width:560px;margin:0 auto}
+
+/* ── Main Content Area ──────────────────────────────────── */
+.main{max-width:1400px;margin:0 auto;padding:0 2rem 3rem}
+
+/* ── Dashboard Nav ──────────────────────────────────────── */
+.dash-nav{display:flex;gap:.25rem;padding:1rem 2rem .5rem;max-width:1400px;margin:0 auto;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.d-tab{background:none;border:none;font-family:inherit;font-size:.82rem;font-weight:500;color:var(--g500);padding:.55rem 1.1rem;border-radius:8px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.d-tab:hover{color:var(--navy);background:var(--g100)}
+.d-tab.active{color:#fff;background:var(--blue);font-weight:600}
+
+/* ── Panels ─────────────────────────────────────────────── */
+.panel{display:none}
+.panel.active{display:block}
+
+/* ── KPI Cards ──────────────────────────────────────────── */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin-bottom:1.25rem}
+.kpi{background:#fff;border-radius:var(--radius);padding:1.1rem 1.25rem;box-shadow:var(--shadow);border:1px solid var(--g200)}
+.kpi-label{font-size:.72rem;color:var(--g500);text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem;display:flex;align-items:center;gap:.4rem}
+.kpi-value{font-size:1.55rem;font-weight:700;color:var(--navy);font-family:'JetBrains Mono','Silka',monospace;line-height:1.2}
+.kpi-sub{font-size:.72rem;color:var(--g400);margin-top:.25rem;display:flex;align-items:center;gap:.35rem}
+.kpi-trend{font-size:.72rem;font-weight:600;margin-top:.25rem}
+.kpi-trend.up{color:var(--green)}
+.kpi-trend.down{color:var(--red)}
+.kpi-trend.down-good{color:var(--green)}
+.kpi-trend.up-bad{color:var(--red)}
+.kpi-trend.neutral{color:var(--amber)}
+.kpi-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+
+/* ── Grid System ────────────────────────────────────────── */
+.grid12{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem}
+.g-12{grid-column:span 12}
+.g-8{grid-column:span 8}
+.g-6{grid-column:span 6}
+.g-5{grid-column:span 5}
+.g-4{grid-column:span 4}
+.g-3{grid-column:span 3}
+.g-7{grid-column:span 7}
+.g-9{grid-column:span 9}
+.g-10{grid-column:span 10}
+.g-2{grid-column:span 2}
+
+/* ── Cards ──────────────────────────────────────────────── */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--g200)}
+.card-h h3{font-size:.85rem;font-weight:600;color:var(--navy)}
+.card-body{padding:1.25rem}
+.card-badge{font-size:.65rem;font-weight:600;padding:3px 8px;border-radius:12px;text-transform:uppercase;letter-spacing:.03em}
+.badge-blue{background:rgba(44,131,211,.1);color:var(--blue)}
+.badge-green{background:rgba(16,202,114,.1);color:var(--green)}
+.badge-purple{background:rgba(136,118,228,.1);color:var(--purple)}
+.badge-orange{background:rgba(249,115,22,.1);color:var(--orange)}
+.badge-red{background:rgba(239,68,68,.1);color:var(--red)}
+.badge-amber{background:rgba(234,179,8,.1);color:var(--amber)}
+
+/* ── Card Header (used in panels) ──────────────────────── */
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--g200)}
+.card-title{font-size:.85rem;font-weight:600;color:var(--navy)}
+.card-sub{font-size:.72rem;color:var(--g400);margin-top:.15rem}
+.span4{grid-column:span 4}.span5{grid-column:span 5}.span6{grid-column:span 6}.span7{grid-column:span 7}.span8{grid-column:span 8}.span12{grid-column:span 12}
+.badge{font-size:.65rem;font-weight:600;padding:3px 8px;border-radius:12px;text-transform:uppercase;letter-spacing:.03em}
+.b-info{background:rgba(44,131,211,.1);color:var(--blue)}
+.b-ok{background:rgba(16,202,114,.1);color:var(--green)}
+.b-warn{background:rgba(234,179,8,.12);color:#b8860b}
+.b-err{background:rgba(239,68,68,.1);color:var(--red)}
+.kpi-color{width:4px;height:32px;border-radius:2px;position:absolute;left:0;top:50%;transform:translateY(-50%)}
+.kpi{position:relative;padding-left:1.5rem}
+
+/* ── Filters ───────────────────────────────────────────── */
+.filters{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem;padding:.75rem 1rem;background:#fff;border-radius:var(--radius);border:1px solid var(--g200);box-shadow:var(--shadow)}
+.filters label{font-size:.72rem;color:var(--g500);font-weight:500;text-transform:uppercase;letter-spacing:.03em}
+.fsel{font-family:inherit;font-size:.78rem;padding:.4rem .7rem;border:1px solid var(--g200);border-radius:6px;background:#fff;color:var(--navy);cursor:pointer;outline:none}
+.fsel:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(44,131,211,.12)}
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--g300);border-radius:20px;transition:.3s}
+.slider::before{content:'';position:absolute;height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle input:checked+.slider{background:var(--blue)}
+.toggle input:checked+.slider::before{transform:translateX(16px)}
+
+/* ── Data Table ────────────────────────────────────────── */
+.table-scroll{overflow-x:auto;padding:0 1.25rem 1.25rem}
+.data-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.data-table th{text-align:left;font-weight:600;color:var(--g500);text-transform:uppercase;font-size:.68rem;letter-spacing:.04em;padding:.6rem .75rem;border-bottom:2px solid var(--g200);white-space:nowrap}
+.data-table td{padding:.65rem .75rem;border-bottom:1px solid var(--g100);color:var(--navy);vertical-align:middle}
+.data-table tr:hover td{background:rgba(44,131,211,.03)}
+.font-bold{font-weight:600}
+.mono{font-family:'JetBrains Mono','Silka',monospace;font-weight:500}
+
+/* ── Insight Callout ───────────────────────────────────── */
+.insight-callout{display:flex;gap:1rem;align-items:flex-start;padding:1.25rem;background:linear-gradient(135deg,rgba(136,118,228,.05),rgba(44,131,211,.05));border:1px solid rgba(136,118,228,.15);border-radius:var(--radius);font-size:.82rem;color:var(--g600);line-height:1.6}
+.insight-icon{font-size:1.3rem;flex-shrink:0}
+
+/* ── Insight Grid (AI Insights panel) - overrides base ─── */
+.panel .insight-panel{background:var(--navy);border-radius:var(--radius);padding:1.5rem;overflow:hidden}
+.insight-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1rem}
+.insight-card{background:var(--navy-3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.15rem 1.25rem}
+.ins-badge{display:inline-block;font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;margin-right:.35rem}
+.ins-badge.crit{background:rgba(239,68,68,.15);color:#f87171}
+.ins-badge.high{background:rgba(249,115,22,.15);color:#fb923c}
+.ins-badge.med{background:rgba(234,179,8,.15);color:#facc15}
+.ins-badge.cat{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5)}
+.ins-text{font-size:.82rem;color:rgba(255,255,255,.75);line-height:1.65;margin-bottom:.6rem}
+.ins-text strong{color:#fff}
+.ins-text em{color:var(--teal-l);font-style:normal}
+.ins-meta{font-size:.68rem;color:rgba(255,255,255,.35)}
+.ins-source{color:var(--blue-l)}
+
+/* ── Forecast Grid (Operations panel) ──────────────────── */
+.fc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.75rem;padding:1rem 1.25rem}
+.fc-card{background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:.85rem;text-align:center}
+.fc-day{font-size:.7rem;color:var(--g500);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.35rem}
+.fc-val{font-size:1.2rem;font-weight:700;font-family:'JetBrains Mono','Silka',monospace;color:var(--navy)}
+.fc-ci{font-size:.65rem;color:var(--g400);margin-top:.2rem}
+.fc-conf{font-size:.6rem;color:var(--blue);font-weight:600;margin-top:.15rem}
+
+/* ── Solutions Grid ────────────────────────────────────── */
+.sol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;max-width:1400px;margin:0 auto;padding:2rem}
+.sol-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.75rem;transition:transform .2s,box-shadow .2s}
+.sol-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.sol-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+.sol-icon svg{width:24px;height:24px}
+.sol-card h3{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:.5rem}
+.sol-card p{font-size:.85rem;color:var(--g500);line-height:1.6}
+.sol-stats{display:flex;gap:1rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--g200)}
+.sol-stat{font-size:.78rem;color:var(--g500)}
+.sol-stat strong{color:var(--navy);font-family:'JetBrains Mono','Silka',monospace}
+
+/* ── Case Studies Grid ─────────────────────────────────── */
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;max-width:1400px;margin:0 auto;padding:2rem}
+.cs-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);overflow:hidden;transition:transform .2s,box-shadow .2s}
+.cs-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.cs-top{height:140px;display:flex;align-items:center;justify-content:center}
+.cs-icon svg{width:40px;height:40px}
+.cs-body{padding:1.5rem}
+.cs-body h3{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:.5rem}
+.cs-body p{font-size:.84rem;color:var(--g500);line-height:1.6}
+.cs-metrics{display:flex;gap:1.25rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--g200)}
+.cs-metric{font-size:.78rem;color:var(--g500)}
+.cs-metric strong{color:var(--navy);font-family:'JetBrains Mono','Silka',monospace}
+.cs-tag{margin-top:.75rem;display:inline-block}
+
+/* ── Contact Grid ──────────────────────────────────────── */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:1400px;margin:0 auto;padding:2rem}
+.c-form{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:2rem}
+.c-form label{display:block;font-size:.78rem;font-weight:500;color:var(--g600);margin-bottom:.35rem;margin-top:.85rem}
+.c-form label:first-of-type{margin-top:0}
+.c-form input,.c-form textarea,.c-form select{width:100%;font-family:inherit;font-size:.85rem;padding:.6rem .85rem;border:1px solid var(--g200);border-radius:8px;background:#fff;color:var(--navy);outline:none;transition:border-color .2s}
+.c-form input:focus,.c-form textarea:focus,.c-form select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(44,131,211,.1)}
+.c-form textarea{resize:vertical;min-height:100px}
+.c-btn{display:block;width:100%;margin-top:1.25rem;background:var(--sa-gradient);color:#fff;border:none;font-family:inherit;font-size:.85rem;font-weight:600;padding:.7rem 1.75rem;border-radius:8px;cursor:pointer;transition:opacity .2s}
+.c-btn:hover{opacity:.9}
+.c-info{display:flex;flex-direction:column;gap:1rem}
+.c-info-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.25rem}
+.c-info-card h3{font-size:.9rem;font-weight:600;color:var(--navy);margin-bottom:.35rem}
+.c-info-card p{font-size:.84rem;color:var(--g500);line-height:1.6}
+
+/* ── Chart Containers ───────────────────────────────────── */
+.chart-box{position:relative;width:100%;height:260px;padding:1rem 1.25rem}
+.chart-box.tall{height:340px}
+.chart-box.short{height:200px}
+.chart-box canvas{width:100%!important;height:100%!important}
+
+/* ── Filters & Controls ─────────────────────────────────── */
+.filter-bar{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.filter-group{display:flex;align-items:center;gap:.4rem}
+.filter-label{font-size:.72rem;color:var(--g500);font-weight:500;text-transform:uppercase;letter-spacing:.03em}
+.filter-select{font-family:inherit;font-size:.78rem;padding:.4rem .7rem;border:1px solid var(--g200);border-radius:6px;background:#fff;color:var(--navy);cursor:pointer;outline:none}
+.filter-select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(44,131,211,.12)}
+.filter-btn{font-family:inherit;font-size:.75rem;font-weight:500;padding:.4rem .85rem;border:1px solid var(--g200);border-radius:6px;background:#fff;color:var(--g600);cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--blue);color:var(--blue)}
+.filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── Toggle Switch ──────────────────────────────────────── */
+.toggle-wrap{display:flex;align-items:center;gap:.5rem}
+.toggle{position:relative;width:36px;height:20px;background:var(--g300);border-radius:20px;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle.on::after{transform:translateX(16px)}
+.toggle-label{font-size:.75rem;color:var(--g600)}
+
+/* ── Map Container ──────────────────────────────────────── */
+.map-wrap{border-radius:var(--radius);overflow:hidden;height:400px;border:1px solid var(--g200)}
+.map-wrap.short{height:280px}
+.map-wrap .leaflet-container{height:100%;width:100%;border-radius:var(--radius)}
+
+/* ── Data Table ─────────────────────────────────────────── */
+.rank-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.rank-table th{text-align:left;font-weight:600;color:var(--g500);text-transform:uppercase;font-size:.68rem;letter-spacing:.04em;padding:.6rem .75rem;border-bottom:2px solid var(--g200);white-space:nowrap}
+.rank-table td{padding:.65rem .75rem;border-bottom:1px solid var(--g100);color:var(--navy);vertical-align:middle}
+.rank-table tr:hover td{background:rgba(44,131,211,.03)}
+.rank-table .num{font-family:'JetBrains Mono','Silka',monospace;font-weight:600}
+.rank-table .bar-cell{width:120px}
+.rank-bar{height:8px;border-radius:4px;background:var(--g200)}
+.rank-bar-fill{height:100%;border-radius:4px;background:var(--blue)}
+.rank-badge{display:inline-block;font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:10px}
+
+/* ── Forecast / Insight Cards ───────────────────────────── */
+.forecast-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.25rem;display:flex;flex-direction:column;gap:.75rem}
+.forecast-card .fc-header{display:flex;align-items:flex-start;justify-content:space-between}
+.forecast-card .fc-title{font-size:.85rem;font-weight:600;color:var(--navy)}
+.forecast-card .fc-value{font-size:1.3rem;font-weight:700;font-family:'JetBrains Mono','Silka',monospace;color:var(--navy)}
+.forecast-card .fc-desc{font-size:.78rem;color:var(--g500);line-height:1.55}
+
+/* ── Insight Panel ──────────────────────────────────────── */
+.insight-panel{background:linear-gradient(135deg,#f8f7ff 0%,#f0f5ff 100%);border:1px solid rgba(136,118,228,.15);border-radius:var(--radius);padding:1.25rem}
+.insight-panel h4{font-size:.85rem;font-weight:600;color:var(--purple);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.insight-panel p{font-size:.82rem;color:var(--g600);line-height:1.6}
+.insight-panel ul{list-style:none;padding:0;margin:.5rem 0 0}
+.insight-panel li{font-size:.8rem;color:var(--g600);padding:.35rem 0;padding-left:1.1rem;position:relative;line-height:1.5}
+.insight-panel li::before{content:'';position:absolute;left:0;top:.65rem;width:6px;height:6px;background:var(--purple);border-radius:50%}
+
+/* ── AI Insight Specific ────────────────────────────────── */
+.ai-card{background:linear-gradient(135deg,#f8f7ff 0%,#f0f5ff 100%);border:1px solid rgba(136,118,228,.15);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow)}
+.ai-card h4{font-size:.85rem;font-weight:600;color:var(--purple);margin-bottom:.65rem;display:flex;align-items:center;gap:.5rem}
+.ai-card p,.ai-card li{font-size:.8rem;color:var(--g600);line-height:1.6}
+.ai-sparkle{font-size:.9rem}
+
+/* ── Progress Bar ───────────────────────────────────────── */
+.progress-wrap{margin-top:.4rem}
+.progress-bar{height:6px;background:var(--g200);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.progress-label{display:flex;justify-content:space-between;font-size:.68rem;color:var(--g500);margin-top:.25rem}
+
+/* ── Solutions Grid ─────────────────────────────────────── */
+.solutions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;padding-top:1.5rem}
+.solution-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.75rem;transition:transform .2s,box-shadow .2s}
+.solution-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.solution-card .sol-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem}
+.solution-card h3{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:.5rem}
+.solution-card p{font-size:.85rem;color:var(--g500);line-height:1.6}
+.solution-card .sol-features{list-style:none;margin-top:.75rem;padding:0}
+.solution-card .sol-features li{font-size:.8rem;color:var(--g600);padding:.3rem 0;padding-left:1.1rem;position:relative}
+.solution-card .sol-features li::before{content:'';position:absolute;left:0;top:.55rem;width:5px;height:5px;background:var(--blue);border-radius:50%}
+
+/* ── Case Studies Grid ──────────────────────────────────── */
+.case-studies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.25rem;padding-top:1.5rem}
+.case-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);overflow:hidden;transition:transform .2s,box-shadow .2s}
+.case-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.case-card-img{height:180px;background:var(--sa-gradient);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:3rem}
+.case-card-body{padding:1.5rem}
+.case-card-body h3{font-size:1rem;font-weight:600;color:var(--navy);margin-bottom:.35rem}
+.case-card-body .case-org{font-size:.78rem;color:var(--blue);font-weight:500;margin-bottom:.6rem}
+.case-card-body p{font-size:.84rem;color:var(--g500);line-height:1.6}
+.case-card-body .case-stats{display:flex;gap:1.25rem;margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--g200)}
+.case-card-body .case-stat-val{font-size:1.1rem;font-weight:700;color:var(--navy);font-family:'JetBrains Mono','Silka',monospace}
+.case-card-body .case-stat-lbl{font-size:.65rem;color:var(--g500);text-transform:uppercase;letter-spacing:.03em}
+
+/* ── Contact Grid ───────────────────────────────────────── */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding-top:1.5rem}
+.contact-form{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:2rem}
+.contact-form h3{font-size:1.1rem;font-weight:600;color:var(--navy);margin-bottom:1.25rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.78rem;font-weight:500;color:var(--g600);margin-bottom:.35rem}
+.form-group input,.form-group textarea,.form-group select{width:100%;font-family:inherit;font-size:.85rem;padding:.6rem .85rem;border:1px solid var(--g200);border-radius:8px;background:#fff;color:var(--navy);outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(44,131,211,.1)}
+.form-group textarea{resize:vertical;min-height:120px}
+.form-submit{background:var(--sa-gradient);color:#fff;border:none;font-family:inherit;font-size:.85rem;font-weight:600;padding:.7rem 1.75rem;border-radius:8px;cursor:pointer;transition:opacity .2s}
+.form-submit:hover{opacity:.9}
+.contact-info{display:flex;flex-direction:column;gap:1.25rem}
+.contact-info-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.5rem}
+.contact-info-card h4{font-size:.9rem;font-weight:600;color:var(--navy);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.contact-info-card p{font-size:.84rem;color:var(--g500);line-height:1.6}
+
+/* ── Footer ─────────────────────────────────────────────── */
+.footer{background:var(--navy);border-top:1px solid rgba(255,255,255,.08);padding:1.75rem 2rem;text-align:center}
+.footer p{color:rgba(255,255,255,.5);font-size:.78rem;line-height:1.7}
+.footer p strong{color:rgba(255,255,255,.75);font-weight:600}
+
+/* ── Stat dot / status indicators ───────────────────────── */
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.status-dot.green{background:var(--green)}
+.status-dot.amber{background:var(--amber)}
+.status-dot.red{background:var(--red)}
+.status-dot.blue{background:var(--blue)}
+
+/* ── Misc Utilities ─────────────────────────────────────── */
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mt-3{margin-top:1.5rem}.mb-1{margin-bottom:.5rem}.mb-2{margin-bottom:1rem}
+.text-center{text-align:center}
+.text-mono{font-family:'JetBrains Mono','Silka',monospace}
+.text-sm{font-size:.78rem}
+.text-muted{color:var(--g500)}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+.flex{display:flex}.items-center{align-items:center}.gap-05{gap:.5rem}.gap-1{gap:1rem}
+.section-title{font-size:.92rem;font-weight:600;color:var(--navy);margin-bottom:.75rem}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--g400)}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media(max-width:1200px){
+    .g-8,.g-7,.g-9,.g-10,.span7,.span8{grid-column:span 12}
+    .g-4,.g-5,.g-3,.g-2,.span4,.span5{grid-column:span 6}
+    .fc-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:900px){
+    .hero{grid-template-columns:1fr;padding:2rem 1.5rem 1.5rem}
+    .hero-stats{grid-template-columns:repeat(2,1fr)}
+    .hero-chart-card{max-width:380px}
+    .g-4,.g-5,.g-3,.g-6,.g-2,.span4,.span5,.span6{grid-column:span 12}
+    .contact-grid{grid-template-columns:1fr}
+    .fc-grid{grid-template-columns:repeat(3,1fr)}
+    .kpi-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+    .header{padding:0 1rem;height:56px}
+    .top-nav{gap:0}
+    .top-tab{font-size:.78rem;padding:.4rem .65rem}
+    .hero-title{font-size:1.5rem}
+    .hero-stats{grid-template-columns:1fr 1fr}
+    .hero-stat-value{font-size:1.1rem}
+    .dash-nav{padding:.75rem 1rem .25rem}
+    .d-tab{font-size:.75rem;padding:.45rem .85rem}
+    .main{padding:0 1rem 2rem}
+    .kpi-row{grid-template-columns:1fr}
+    .solutions-grid,.case-studies-grid,.sol-grid,.cs-grid{grid-template-columns:1fr}
+    .contact-grid{grid-template-columns:1fr}
+    .fc-grid{grid-template-columns:repeat(2,1fr)}
+    .pg-hero h1{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════════════════════ -->
+<header class="header">
+    <div class="header-left">
+        <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 391.04 97.15"><defs><style>.sa-l{fill:#fff;stroke-width:0}</style></defs><g><path class="sa-l" d="M78.11,26.15c-.01-.22-.04-.44-.07-.68-.03-.22-.06-.45-.1-.66-.03-.15-.06-.3-.1-.45-.06-.23-.13-.45-.2-.66-.11-.33-.23-.65-.37-.97-.11-.24-.23-.47-.35-.69l-.11-.2c-.15-.25-.3-.5-.49-.76-.17-.24-.36-.46-.56-.7-.17-.21-.39-.45-.69-.72-.18-.17-.37-.33-.56-.48l-.16-.13c-.17-.13-.35-.26-.54-.39l-.19-.13c-.1-.07-.21-.13-.31-.19L44.05,1.32c-1.49-.86-3.18-1.32-4.9-1.32s-3.4.45-4.88,1.31L4.86,18.32c-.14.08-.28.17-.41.26l-.2.14c-.17.12-.33.23-.5.37-.25.19-.5.4-.74.63-.2.2-.4.41-.59.63-.2.23-.4.47-.58.73l-.15.22c-.13.2-.26.4-.37.6-.14.24-.27.47-.44.84-.11.23-.2.48-.29.74l-.09.27c-.09.26-.16.52-.23.79-.06.26-.11.53-.15.82-.05.31-.08.61-.1.93-.01.16-.02.32-.02.47v33.15c0,3.45,1.87,6.69,4.86,8.44l29.4,17.01.24.13c.18.09.35.18.56.27l.18.09c.12.05.24.1.35.15.08.03.38.14.45.16,1.02.34,2.06.51,3.1.51s2.07-.17,3.09-.51c.2-.07.41-.14.62-.23.13-.05.25-.11.41-.18.23-.1.52-.25.85-.44l29.17-16.96c2.99-1.74,4.85-4.97,4.85-8.43V26.76c0-.19,0-.38-.03-.6ZM70.58,59.67c0,1.13-.6,2.18-1.58,2.75l-28.25,16.43s0,0-.01,0c-.09.05-.18.1-.28.14-.03.01-.07.03-.1.05-.07.03-.14.05-.2.07-.33.11-.67.17-1,.17h0c-.35,0-.69-.06-1.03-.17-.06-.02-.11-.04-.17-.06-.04-.02-.08-.04-.12-.06-.09-.04-.17-.08-.26-.13,0,0,0,0-.01,0l-28.4-16.43c-.98-.57-1.59-1.62-1.59-2.76v-7.78l29.26,17.02c.65.38,1.38.58,2.13.58h.07s.06,0,.1,0h0c.75-.02,1.45-.23,2.05-.59l18.56-10.73c1.31-.76,2.11-2.15,2.12-3.66,0-1.51-.8-2.91-2.1-3.67l-30.78-17.98,10.18-5.89,31.43,18.28v14.43ZM70.58,35.42l-29.26-17.02c-.65-.38-1.38-.58-2.13-.58h-.07s-.06,0-.1,0h0c-.75.02-1.44.23-2.05.59l-18.56,10.74c-1.31.76-2.12,2.15-2.12,3.66,0,1.51.8,2.91,2.1,3.67l30.78,17.98-10.18,5.89L7.56,42.07v-14.43s0-.07,0-.1c0-.11.02-.22.04-.34.01-.1.02-.19.05-.29.02-.1.06-.19.09-.29.04-.1.07-.2.11-.29.04-.09.09-.18.14-.27.05-.09.1-.18.16-.26.06-.08.13-.16.2-.24.07-.08.13-.16.21-.22.07-.07.15-.13.23-.19.09-.07.18-.14.27-.2.03-.02.06-.05.09-.06l28.4-16.43c.99-.57,2.21-.57,3.2,0l28.25,16.43s.05.04.08.06c.1.06.19.13.28.2.08.06.15.12.23.19.08.07.14.15.21.23.07.08.14.15.2.24.06.08.11.17.16.26.05.09.1.18.15.27.04.09.07.19.11.29.03.1.07.2.1.3.02.09.03.19.04.29.02.12.03.23.03.34,0,.04,0,.07,0,.1v7.78Z"/><g><g><path class="sa-l" d="M104.5,30.82c0-3.68,2.94-7.06,9.27-7.06s9.71,3.24,9.71,8.32h8.02c-.15-10.74-8.9-15.45-17.66-15.45-10.89,0-17.22,6.55-17.22,14.35,0,20.75,27.89,10.45,27.89,24.36,0,4.64-4.12,7.43-10.23,7.43-7.14,0-11.48-4.19-11.55-9.49h-7.73c0,9.93,7.95,16.78,18.98,16.78,11.85,0,18.69-6.7,18.69-15.3,0-20.82-28.18-11.48-28.18-23.91Z"/><rect class="sa-l" x="141.12" y="30.6" width="7.73" height="38.48"/><path class="sa-l" d="M202.09,29.65c-5.22,0-9.27,1.91-11.85,6.47h-.52c-2.21-3.9-6.25-6.47-11.77-6.47s-9.12,2.8-10.82,6.03h-.52v-5.08h-7.5v38.48h7.73v-22.66c0-5.67,3.83-9.57,8.68-9.57s8.31,3.38,8.31,8.76v23.47h7.73v-22.44c0-6.18,3.9-9.79,8.76-9.79s8.09,3.38,8.09,9.64v22.59h7.73v-25.24c0-8.32-5.59-14.2-14.05-14.2Z"/><path class="sa-l" d="M245.87,29.65c-7.65,0-11.33,4.93-12.36,6.47h-.52v-5.52h-7.5v55.41h7.73v-22.52h.44c1.25,2.06,5.22,6.55,12.65,6.55,10.67,0,18.25-8.39,18.25-20.31s-7.58-20.09-18.69-20.09ZM244.92,63.05c-6.77,0-11.92-4.93-11.92-13.24,0-7.28,4.41-13.17,11.77-13.17s11.92,5.15,11.92,13.17-4.78,13.24-11.77,13.24Z"/><path class="sa-l" d="M279.11,40.76c0-2.87,2.72-4.93,7.06-4.93,4.64,0,7.14,2.13,7.58,5.37h7.06c-.59-7.36-6.62-11.55-14.35-11.55-8.83,0-14.57,4.78-14.57,11.26,0,15.67,22.52,7.73,22.52,17.14,0,3.38-2.8,5.67-7.87,5.67s-7.87-2.06-8.39-6.03h-7.29c.52,7.43,5.67,12.36,15.45,12.36s15.6-5.08,15.6-12.36c0-16.33-22.81-8.39-22.81-16.92Z"/><path class="sa-l" d="M328.89,29.65c-11.85,0-20.38,8.68-20.38,20.23s8.46,20.16,20.31,20.16,20.31-8.68,20.31-20.16-8.39-20.23-20.24-20.23ZM328.82,63.05c-7.21,0-12.44-5.52-12.44-13.17s5.15-13.17,12.44-13.17,12.43,5.52,12.43,13.17-5.15,13.17-12.43,13.17Z"/><path class="sa-l" d="M376.92,29.65c-5.74,0-9.71,2.94-11.26,6.11h-.52v-5.15h-7.5v38.48h7.73v-22.44c0-5.59,3.97-9.79,9.35-9.79,4.86,0,8.61,3.61,8.61,8.98v23.25h7.73v-24.72c0-8.31-5.37-14.72-14.13-14.72Z"/><path class="sa-l" d="M149.23,18.66s0-.05,0-.07c0-.02,0-.05-.01-.07,0-.02,0-.03-.01-.05,0-.02-.01-.05-.02-.07-.01-.04-.02-.07-.04-.11-.01-.03-.03-.05-.04-.07v-.02s-.04-.05-.07-.08c-.02-.03-.04-.05-.06-.08-.02-.02-.04-.05-.07-.08-.02-.02-.04-.04-.06-.05h-.02s-.04-.04-.06-.06h-.02s-.02-.03-.03-.04l-3.18-1.85c-.16-.09-.35-.14-.53-.14s-.37.05-.53.14l-3.2,1.85s-.03.02-.04.03l-.02.02s-.04.03-.05.04c-.03.02-.05.04-.08.07-.02.02-.04.04-.06.07-.02.02-.04.05-.06.08l-.02.02s-.03.04-.04.07c-.02.03-.03.05-.05.09-.01.03-.02.05-.03.08v.03s-.03.06-.03.09c0,.03-.01.06-.02.09,0,.03,0,.07-.01.1,0,.02,0,.03,0,.05v3.61c0,.38.2.73.53.92l3.2,1.85h.03s.04.03.06.04h.02s.03.02.04.03c0,0,.04.02.05.02.11.04.22.06.34.06s.22-.02.34-.06c.02,0,.04-.02.07-.02.01,0,.03-.01.04-.02.02-.01.06-.03.09-.05l3.17-1.85c.33-.19.53-.54.53-.92v-3.61s0-.04,0-.07Z"/></g><g><g><path class="sa-l" d="M258.91,80.56h2.35l6.65,16.28h-2.1l-1.56-3.86h-8.35l-1.56,3.86h-2.1l6.67-16.28ZM263.55,91.26l-3.41-8.51h-.15l-3.41,8.51h6.97Z"/><path class="sa-l" d="M268.84,93.33h1.9c.22,1.44,1.31,2.21,3.19,2.21s2.99-.88,2.99-2.12c0-3.4-7.68-.81-7.68-5.61,0-2.05,1.95-3.37,4.64-3.37,2.37,0,4.35,1.3,4.55,3.49h-1.88c-.17-1.14-1.09-1.91-2.79-1.91-1.61,0-2.64.74-2.64,1.79,0,3.07,7.71.51,7.71,5.51,0,2.28-2,3.81-4.99,3.81s-4.77-1.56-4.99-3.81Z"/><path class="sa-l" d="M280.87,93.33h1.9c.22,1.44,1.31,2.21,3.19,2.21s2.99-.88,2.99-2.12c0-3.4-7.68-.81-7.68-5.61,0-2.05,1.95-3.37,4.64-3.37,2.37,0,4.35,1.3,4.55,3.49h-1.88c-.17-1.14-1.09-1.91-2.79-1.91-1.61,0-2.64.74-2.64,1.79,0,3.07,7.71.51,7.71,5.51,0,2.28-2,3.81-4.99,3.81s-4.77-1.56-4.99-3.81Z"/><path class="sa-l" d="M292.66,90.8c0-3.65,2.89-6.35,6.72-6.35s6.7,2.72,6.7,6.35-2.87,6.35-6.72,6.35-6.7-2.67-6.7-6.35ZM304.07,90.8c0-2.67-1.95-4.68-4.72-4.68s-4.69,2.02-4.69,4.68,1.95,4.68,4.69,4.68,4.72-1.98,4.72-4.68Z"/><path class="sa-l" d="M307.5,90.8c0-3.58,2.79-6.35,6.57-6.35,2.79,0,5.39,1.58,6.08,4.28h-2.03c-.52-1.58-2.15-2.61-4-2.61-2.74,0-4.6,2.05-4.6,4.68s1.95,4.68,4.64,4.68c1.85,0,3.51-1.02,4-2.61h2c-.67,2.7-3.29,4.28-6.08,4.28-3.88,0-6.6-2.77-6.6-6.35Z"/><path class="sa-l" d="M322.6,84.75h1.95v12.09h-1.95v-12.09Z"/><path class="sa-l" d="M326.72,90.82c0-3.72,2.62-6.37,6.25-6.37,2.69,0,4.13,1.63,4.52,2.26h.15v-1.95h1.95v12.09h-1.88v-1.91h-.15c-.32.44-1.66,2.21-4.45,2.21-3.78,0-6.4-2.63-6.4-6.33ZM337.72,90.82c0-2.98-1.98-4.7-4.52-4.7s-4.47,1.95-4.47,4.7,1.83,4.68,4.52,4.68,4.47-2.14,4.47-4.68Z"/><path class="sa-l" d="M343.94,93.19v-6.88h-2.42v-1.56h1.93c.35,0,.62-.21.62-.6v-2.91h1.83v3.51h3.95v1.56h-3.95v6.86c0,1.3.52,2.07,2,2.07h1.78v1.6h-1.9c-2.37,0-3.83-1.21-3.83-3.65Z"/><path class="sa-l" d="M351.28,90.8c0-3.86,2.79-6.35,6.3-6.35,3.9,0,6.23,2.7,6.23,6.19v.81h-10.48c.1,2.42,1.75,4.02,4.4,4.02,1.7,0,3.34-.77,3.93-2.19h2.03c-.72,2.26-2.96,3.86-5.98,3.86-3.93,0-6.42-2.72-6.42-6.35ZM361.73,89.82c-.17-2.42-1.98-3.7-4.15-3.7s-4,1.47-4.2,3.7h8.35Z"/><path class="sa-l" d="M365.49,93.33h1.9c.22,1.44,1.31,2.21,3.19,2.21s2.99-.88,2.99-2.12c0-3.4-7.68-.81-7.68-5.61,0-2.05,1.95-3.37,4.64-3.37,2.37,0,4.35,1.3,4.55,3.49h-1.88c-.17-1.14-1.09-1.91-2.79-1.91-1.61,0-2.64.74-2.64,1.79,0,3.07,7.71.51,7.71,5.51,0,2.28-2,3.81-4.99,3.81s-4.77-1.56-4.99-3.81Z"/></g><path class="sa-l" d="M324.8,80.71s0-.01,0-.02c0,0,0-.01,0-.02,0,0,0,0,0-.01,0,0,0-.01,0-.02,0-.01,0-.02-.01-.03,0,0,0-.01-.01-.02h0s0-.02-.02-.03c0,0-.01-.01-.02-.02,0,0-.01-.01-.02-.02,0,0-.01-.01-.02-.02h0s-.01-.01-.02-.02h0s0,0,0-.01l-.92-.53s-.1-.04-.15-.04-.11.01-.15.04l-.92.53s0,0-.01,0h0s-.01.01-.02.02c0,0-.02.01-.02.02,0,0-.01.01-.02.02,0,0-.01.01-.02.02h0s0,.02-.01.03c0,0,0,.01-.01.03,0,0,0,.02,0,.02h0s0,.02,0,.03c0,0,0,.02,0,.03,0,0,0,.02,0,.03,0,0,0,.01,0,.01v1.04c0,.11.06.21.15.26l.92.53h0s.01,0,.02.01h0s0,0,.01,0c0,0,.01,0,.01,0,.03.01.06.02.1.02s.06,0,.1-.02c0,0,.01,0,.02,0,0,0,0,0,.01,0,0,0,.02,0,.03-.01l.91-.53c.09-.05.15-.16.15-.26v-1.04s0-.01,0-.02Z"/></g></g></g></svg>
+        <span class="demo-tag">NFP Demo</span>
+    </div>
+    <nav class="top-nav">
+        <button class="top-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+        <button class="top-tab" onclick="showPage('solutions',this)">Solutions</button>
+        <button class="top-tab" onclick="showPage('casestudies',this)">Case Studies</button>
+        <button class="top-tab" onclick="showPage('contact',this)">Contact</button>
+    </nav>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: DASHBOARD
+     ══════════════════════════════════════════════════════════ -->
+<div id="pg-dashboard" class="page active">
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-left">
+            <h1 class="hero-title">Not-For-Profit <span class="grad">Data Analytics &amp; AI</span></h1>
+            <p class="hero-sub">Data-driven insights for fundraising optimisation, partnership intelligence, and operational excellence &mdash; built on Microsoft Azure &amp; Fabric for charities and social enterprises.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">&pound;12.4M</div>
+                    <div class="hero-stat-label">Total Income</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">62%</div>
+                    <div class="hero-stat-label">Donor Retention</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">47</div>
+                    <div class="hero-stat-label">Active Partnerships</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">28,450</div>
+                    <div class="hero-stat-label">Beneficiaries Served</div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-right">
+            <div class="hero-chart-card">
+                <div class="hero-chart-header">
+                    <span class="hero-chart-title">Income Breakdown</span>
+                    <span class="live-dot">Synthetic demo data</span>
+                </div>
+                <div class="hero-chart-wrap">
+                    <canvas id="heroDonut"></canvas>
+                </div>
+                <div class="hero-chart-legend">
+                    <span class="legend-item"><span class="legend-dot" style="background:#2C83D3"></span>Individual Giving</span>
+                    <span class="legend-item"><span class="legend-dot" style="background:#8876E4"></span>Grants &amp; Trusts</span>
+                    <span class="legend-item"><span class="legend-dot" style="background:#10CA72"></span>Corporate</span>
+                    <span class="legend-item"><span class="legend-dot" style="background:#F97316"></span>Events</span>
+                    <span class="legend-item"><span class="legend-dot" style="background:#EAB308"></span>Trading</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Nav -->
+    <nav class="dash-nav">
+        <button class="d-tab active" data-panel="exec-summary">Executive Summary</button>
+        <button class="d-tab" data-panel="fundraising">Fundraising</button>
+        <button class="d-tab" data-panel="partnerships">Partnerships</button>
+        <button class="d-tab" data-panel="operations">Operations</button>
+        <button class="d-tab" data-panel="benchmarks">Benchmarks</button>
+        <button class="d-tab" data-panel="ai-insights">AI Insights</button>
+    </nav>
+
+    <!-- Dashboard Panels -->
+    <div class="main">
+
+        <!-- Panel: Executive Summary -->
+        <div id="exec-summary" class="panel active">
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">£8.24M</div><div class="kpi-label">Total Donations (YTD)</div><div class="kpi-trend up">&#9650; 8.2% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">13,120</div><div class="kpi-label">Active Donors</div><div class="kpi-trend up">&#9650; 4.6% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">£5.25M</div><div class="kpi-label">Partnership Funding</div><div class="kpi-trend up">&#9650; 12.1% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--amber)"></div><div class="kpi-value">142,000</div><div class="kpi-label">Volunteer Hours</div><div class="kpi-trend up">&#9650; 6.8% vs prior year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">£390</div><div class="kpi-label">Cost per Beneficiary</div><div class="kpi-trend down-good">&#9660; 3.2% (improving)</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Income Trends (12 Months)</div><div class="card-sub">Monthly income split by Donations, Grants, Earned income</div></div><span class="badge b-info">Synthetic</span></div>
+                    <div class="chart-box"><canvas id="execTrendChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Income Source Mix</div><div class="card-sub">Breakdown by source type</div></div></div>
+                    <div class="chart-box"><canvas id="execSourceChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Programme Impact</div><div class="card-sub">Beneficiary outcomes vs targets by programme</div></div></div>
+                    <div class="chart-box"><canvas id="execImpactChart"></canvas></div>
+                </div>
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Financial Health</div><div class="card-sub">Organisation health across 6 dimensions</div></div></div>
+                    <div class="chart-box"><canvas id="execRadarChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: Fundraising -->
+        <div id="fundraising" class="panel">
+            <!-- Filters -->
+            <div class="filters">
+                <label>Period:</label>
+                <select class="fsel" id="frPeriod"><option value="12">Last 12 Months</option><option value="6">Last 6 Months</option><option value="3">Last 3 Months</option><option value="all">All Time</option></select>
+                <label>Campaign:</label>
+                <select class="fsel" id="frCampaign"><option value="all">All Campaigns</option><option value="winter">Winter Appeal 2025</option><option value="gala">Spring Gala</option><option value="biggive">Big Give Christmas</option><option value="emergency">Emergency Housing Appeal</option><option value="youth">Youth Futures Campaign</option><option value="legacy">Legacy Giving Programme</option><option value="corporate">Corporate Partnerships</option><option value="regular">Regular Giving Acquisition</option></select>
+                <div class="toggle-wrap"><label>Show segments</label><label class="toggle"><input type="checkbox" id="frSegToggle"><span class="slider"></span></label></div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">£8.24M</div><div class="kpi-label">Total Donations</div><div class="kpi-trend up">&#9650; 8.2%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">£48.60</div><div class="kpi-label">Average Gift</div><div class="kpi-trend up">&#9650; 3.1%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">62%</div><div class="kpi-label">Donor Retention Rate</div><div class="kpi-trend up">&#9650; 2.4pp</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">£0.22</div><div class="kpi-label">Cost per £ Raised</div><div class="kpi-trend down-good">&#9660; 4.1% (improving)</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--amber)"></div><div class="kpi-value">45%</div><div class="kpi-label">Online Revenue %</div><div class="kpi-trend up">&#9650; 6.2pp</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Monthly Donation Trend</div><div class="card-sub">12-month donations with prior year comparison</div></div></div>
+                    <div class="chart-box"><canvas id="frTrendChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Donor Segmentation</div><div class="card-sub">Active donors by segment</div></div></div>
+                    <div class="chart-box"><canvas id="frSegChart"></canvas></div>
+                </div>
+                <div class="card span8">
+                    <div class="card-header"><div><div class="card-title">Campaign Performance</div><div class="card-sub">Income, cost, and ROI per campaign</div></div></div>
+                    <div class="chart-box"><canvas id="frCampaignChart"></canvas></div>
+                </div>
+                <div class="card span4">
+                    <div class="card-header"><div><div class="card-title">Donation Channel Mix</div><div class="card-sub">% of income by channel</div></div></div>
+                    <div class="chart-box"><canvas id="frChannelChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Donor Retention Cohort</div><div class="card-sub">Retention curves by acquisition year</div></div></div>
+                    <div class="chart-box"><canvas id="frRetentionChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Donor Lifetime Value by Segment</div><div class="card-sub">Average 3-year LTV per segment</div></div></div>
+                    <div class="chart-box"><canvas id="frLTVChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Donor Segment Table -->
+            <div class="card" style="margin-top:1.25rem">
+                <div class="card-header"><div><div class="card-title">Donor Segment Breakdown</div><div class="card-sub">Key metrics by donor segment</div></div></div>
+                <div class="table-scroll">
+                    <table class="data-table" id="donorTable">
+                        <thead><tr><th>Segment</th><th>Count</th><th>Avg Annual Gift</th><th>Retention Rate</th><th>LTV (3yr)</th><th>Trend</th></tr></thead>
+                        <tbody>
+                            <tr><td class="font-bold">Major Donors (£5,000+)</td><td class="mono">42</td><td class="mono">£12,400</td><td class="mono">88%</td><td class="mono">£34,100</td><td class="kpi-trend up">&#9650; 4.2%</td></tr>
+                            <tr><td class="font-bold">Mid-Level (£1,000–£4,999)</td><td class="mono">318</td><td class="mono">£2,150</td><td class="mono">72%</td><td class="mono">£5,400</td><td class="kpi-trend up">&#9650; 6.1%</td></tr>
+                            <tr><td class="font-bold">Regular Givers (monthly)</td><td class="mono">3,840</td><td class="mono">£384/yr</td><td class="mono">68%</td><td class="mono">£1,020</td><td class="kpi-trend up">&#9650; 8.4%</td></tr>
+                            <tr><td class="font-bold">One-time Donors</td><td class="mono">8,920</td><td class="mono">£45</td><td class="mono">22%</td><td class="mono">£58</td><td class="kpi-trend down">&#9660; 2.1%</td></tr>
+                            <tr><td class="font-bold">Lapsed (12mo+ no gift)</td><td class="mono">4,150</td><td class="mono">—</td><td class="mono">—</td><td class="mono">—</td><td class="kpi-trend" style="color:var(--amber)">Re-activation target: 8%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- AI Insight Callout -->
+            <div class="insight-callout" style="margin-top:1.25rem">
+                <div class="insight-icon">&#x1F4A1;</div>
+                <div><strong>Lapsed Donor Re-activation Opportunity:</strong> 4,150 lapsed donors identified. Predictive model estimates 8.2% re-activation rate with personalised email sequence, projecting £153,000 additional income. <em>Recommended: launch segmented re-engagement campaign within 30 days.</em></div>
+            </div>
+        </div>
+
+        <!-- Panel: Partnerships -->
+        <div id="partnerships" class="panel">
+            <!-- Filters -->
+            <div class="filters">
+                <label>Type:</label>
+                <select class="fsel" id="ptType"><option value="all">All Types</option><option value="corporate">Corporate Sponsor</option><option value="grant">Grant Funder</option><option value="statutory">Statutory</option><option value="trust">Trust/Foundation</option><option value="academic">Academic</option><option value="community">Community</option></select>
+                <label>Health:</label>
+                <select class="fsel" id="ptHealth"><option value="all">All Bands</option><option value="platinum">Platinum (90-100)</option><option value="gold">Gold (75-89)</option><option value="silver">Silver (60-74)</option><option value="bronze">Bronze (&lt;60)</option></select>
+                <div class="toggle-wrap"><label>Show funding view</label><label class="toggle"><input type="checkbox" id="ptFundToggle"><span class="slider"></span></label></div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">47</div><div class="kpi-label">Active Partnerships</div><div class="kpi-trend up">&#9650; 5 new this year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">£5.25M</div><div class="kpi-label">Total Partner Funding</div><div class="kpi-trend up">&#9650; 12.1%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">79.4</div><div class="kpi-label">Avg Health Score</div><div class="kpi-trend up">&#9650; 2.8 points</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">91%</div><div class="kpi-label">Project Completion Rate</div><div class="kpi-trend up">&#9650; 3.2pp</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--red)"></div><div class="kpi-value">4</div><div class="kpi-label">At-Risk Partners</div><div class="kpi-trend down-good">&#9660; 2 fewer (improving)</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Partnership Health Distribution</div><div class="card-sub">Partners by health score band</div></div></div>
+                    <div class="chart-box"><canvas id="ptHealthChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Funding by Partner Type</div><div class="card-sub">Annual funding breakdown</div></div></div>
+                    <div class="chart-box"><canvas id="ptTypeChart"></canvas></div>
+                </div>
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Funding Trend (12 Months)</div><div class="card-sub">Monthly funding by partner type</div></div></div>
+                    <div class="chart-box"><canvas id="ptTrendChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Partnership Scoring Radar</div><div class="card-sub">Top 3 partners across 4 scoring dimensions</div></div></div>
+                    <div class="chart-box"><canvas id="ptRadarChart"></canvas></div>
+                </div>
+                <div class="card span12">
+                    <div class="card-header"><div><div class="card-title">Collaboration Activity</div><div class="card-sub">Weekly count of meetings, joint initiatives, communications</div></div></div>
+                    <div class="chart-box" style="height:200px"><canvas id="ptActivityChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Partnership Ranking Table -->
+            <div class="card" style="margin-top:1.25rem">
+                <div class="card-header"><div><div class="card-title">Partnership Rankings</div><div class="card-sub">All active partnerships sorted by health score</div></div></div>
+                <div class="table-scroll">
+                    <table class="data-table" id="partnerTable">
+                        <thead><tr><th>Partner</th><th>Type</th><th>Annual Value</th><th>Health Score</th><th>Trend</th><th>Status</th></tr></thead>
+                        <tbody id="partnerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- At-Risk Alert Panel -->
+            <div class="card" style="margin-top:1.25rem;background:linear-gradient(135deg,rgba(239,68,68,.03),rgba(249,115,22,.03));border-color:rgba(239,68,68,.15)">
+                <div class="card-header"><div><div class="card-title" style="color:var(--red)">At-Risk Partnership Alerts</div><div class="card-sub">Partnerships requiring immediate attention</div></div><span class="badge b-err">4 at-risk</span></div>
+                <div class="grid12" id="atRiskGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: Operations -->
+        <div id="operations" class="panel">
+            <!-- Filters -->
+            <div class="filters">
+                <label>Programme:</label>
+                <select class="fsel" id="opProg"><option value="all">All Programmes</option><option value="safehomes">Safe Homes</option><option value="futures">Future Foundations</option><option value="wellbeing">Community Wellbeing</option></select>
+                <label>Region:</label>
+                <select class="fsel" id="opRegion"><option value="all">All Regions</option><option value="leeds">Leeds</option><option value="manchester">Manchester</option><option value="newcastle">Newcastle</option><option value="sheffield">Sheffield</option></select>
+                <div class="toggle-wrap"><label>Show forecast</label><label class="toggle"><input type="checkbox" id="opForecastToggle"><span class="slider"></span></label></div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi"><div class="kpi-color" style="background:var(--blue)"></div><div class="kpi-value">1,247</div><div class="kpi-label">Active Volunteers</div><div class="kpi-trend up">&#9650; 312 new this year</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--teal)"></div><div class="kpi-value">11,830</div><div class="kpi-label">Monthly Hours</div><div class="kpi-trend up">&#9650; 6.8%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--purple)"></div><div class="kpi-value">28,450</div><div class="kpi-label">Beneficiaries Served</div><div class="kpi-trend up">&#9650; 9.4%</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--green)"></div><div class="kpi-value">95%</div><div class="kpi-label">Service Delivery Rate</div><div class="kpi-trend up">&#9650; 2.1pp</div></div>
+                <div class="kpi"><div class="kpi-color" style="background:var(--amber)"></div><div class="kpi-value">£390</div><div class="kpi-label">Cost per Beneficiary</div><div class="kpi-trend down-good">&#9660; 3.2% (improving)</div></div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">Service Demand Trend &amp; Forecast</div><div class="card-sub">12-month historical + forecast with confidence band</div></div></div>
+                    <div class="chart-box"><canvas id="opDemandChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Volunteer Hours by Programme</div><div class="card-sub">Monthly hours split by programme</div></div></div>
+                    <div class="chart-box"><canvas id="opVolChart"></canvas></div>
+                </div>
+
+                <!-- 7-Day Demand Forecast -->
+                <div class="card span12">
+                    <div class="card-header"><div><div class="card-title">7-Day Service Demand Forecast</div><div class="card-sub">ML-predicted service sessions with confidence intervals</div></div><span class="badge b-info">84% Accuracy</span></div>
+                    <div class="fc-grid" id="opForecastGrid"></div>
+                </div>
+
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Resource Utilisation</div><div class="card-sub">Available vs deployed across resource types</div></div></div>
+                    <div class="chart-box"><canvas id="opResourceChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Beneficiary Outcomes vs Targets</div><div class="card-sub">Achievement rate by outcome area</div></div></div>
+                    <div class="chart-box"><canvas id="opOutcomeChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Volunteer Retention Trend</div><div class="card-sub">Monthly retention rate over 12 months</div></div></div>
+                    <div class="chart-box"><canvas id="opRetentionChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Service Coverage Map</div><div class="card-sub">34 service delivery locations across Northern England</div></div></div>
+                    <div class="map-wrap" id="opMapWrap"><div id="opMap" style="height:100%;width:100%"></div></div>
+                </div>
+            </div>
+
+            <!-- Demand Drivers Callout -->
+            <div class="insight-callout" style="margin-top:1.25rem">
+                <div class="insight-icon">&#x1F4CA;</div>
+                <div><strong>Seasonal Demand Drivers:</strong> The forecasting model incorporates winter demand spikes (28% increase Nov-Feb), school holiday patterns, economic indicators (cost of living index), and weather severity data. Current capacity utilisation at <strong>97%</strong> indicates need for surge planning. Historical patterns show demand peaks correlate with temperature drops below 5&deg;C and universal credit payment cycles.</div>
+            </div>
+        </div>
+
+        <!-- Panel: Benchmarks -->
+        <div id="benchmarks" class="panel">
+            <!-- Controls -->
+            <div class="filters">
+                <label>Benchmark Source:</label>
+                <select class="fsel" id="bmSource"><option value="ncvo">NCVO Almanac</option><option value="aaw">AAW Fundraising</option><option value="mr">M+R Digital</option><option value="charity-digital">Charity Digital</option></select>
+                <label>Organisation Size:</label>
+                <select class="fsel" id="bmSize"><option value="all">All Sizes</option><option value="tier1">Tier 1 (&lt;£500k)</option><option value="tier2">Tier 2 (£500k–£15m)</option><option value="tier3">Tier 3 (&gt;£15m)</option></select>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="grid12">
+                <div class="card span7">
+                    <div class="card-header"><div><div class="card-title">KPI Benchmark Comparison</div><div class="card-sub">Hope &amp; Compass vs Sector Average vs Top Quartile</div></div></div>
+                    <div class="chart-box"><canvas id="bmCompareChart"></canvas></div>
+                </div>
+                <div class="card span5">
+                    <div class="card-header"><div><div class="card-title">Data Maturity Assessment</div><div class="card-sub">7 Data Orchard dimensions (1-5 scale)</div></div></div>
+                    <div class="chart-box"><canvas id="bmMaturityChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Fundraising Efficiency Scatter</div><div class="card-sub">Cost per £ raised vs donor retention</div></div></div>
+                    <div class="chart-box"><canvas id="bmScatterChart"></canvas></div>
+                </div>
+                <div class="card span6">
+                    <div class="card-header"><div><div class="card-title">Income Diversification</div><div class="card-sub">Income source mix comparison</div></div></div>
+                    <div class="chart-box"><canvas id="bmDiversChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Benchmark Data Table -->
+            <div class="card" style="margin-top:1.25rem">
+                <div class="card-header"><div><div class="card-title">Benchmark Data Points</div><div class="card-sub">Hope &amp; Compass performance vs sector benchmarks</div></div></div>
+                <div class="table-scroll">
+                    <table class="data-table">
+                        <thead><tr><th>Metric</th><th>Hope &amp; Compass</th><th>Sector Average</th><th>Top Quartile</th><th>Position</th></tr></thead>
+                        <tbody>
+                            <tr><td class="font-bold">Donor Retention</td><td class="mono">62%</td><td class="mono">40%</td><td class="mono">68%</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Cost per £ Raised</td><td class="mono">£0.22</td><td class="mono">£0.25</td><td class="mono">£0.18</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Fundraising ROI</td><td class="mono">4.5:1</td><td class="mono">4.0:1</td><td class="mono">5.2:1</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Online Revenue %</td><td class="mono">45%</td><td class="mono">32%</td><td class="mono">55%</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Volunteer Retention</td><td class="mono">71%</td><td class="mono">58%</td><td class="mono">78%</td><td><span class="badge b-ok">Above Avg</span></td></tr>
+                            <tr><td class="font-bold">Overhead Ratio</td><td class="mono">29%</td><td class="mono">31%</td><td class="mono">24%</td><td><span class="badge b-info">Average</span></td></tr>
+                            <tr><td class="font-bold">Reserve Months</td><td class="mono">4.2</td><td class="mono">3.6</td><td class="mono">6.0</td><td><span class="badge b-info">Average</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel: AI Insights -->
+        <div id="ai-insights" class="panel">
+            <!-- Filters -->
+            <div class="filters">
+                <label>Vertical:</label>
+                <select class="fsel" id="aiVertical"><option value="all">All Verticals</option><option value="fundraising">Fundraising</option><option value="partnerships">Partnerships</option><option value="operations">Operations</option></select>
+                <label>Priority:</label>
+                <select class="fsel" id="aiPriority"><option value="all">All Priorities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option></select>
+            </div>
+
+            <!-- Dark Insight Panel -->
+            <div class="insight-panel">
+                <div class="card-header"><div><div class="card-title" style="color:#fff">AI-Generated Insights &amp; Recommendations</div><div class="card-sub" style="color:rgba(255,255,255,.5)">Automated pattern detection using predictive models, historical trends, and cross-vertical analysis</div></div></div>
+                <div class="insight-grid" id="insightGrid">
+                    <!-- Fundraising Insights -->
+                    <div class="insight-card" data-vertical="fundraising" data-priority="critical">
+                        <span class="ins-badge crit">Critical</span><span class="ins-badge cat">Fundraising</span>
+                        <div class="ins-text"><strong>Lapsed donor re-activation opportunity:</strong> 4,150 lapsed donors identified. Predictive model estimates 8.2% re-activation rate with personalised email sequence, projecting £153,000 additional income. <em>Recommended: launch segmented re-engagement campaign within 30 days.</em></div>
+                        <div class="ins-meta">Model: Donor Propensity v2.1 &middot; Confidence: 84% &middot; Source: <span class="ins-source">CRM + Email Platform</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="fundraising" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Fundraising</span>
+                        <div class="ins-text"><strong>Regular giving upgrade potential:</strong> 380 regular givers at same monthly amount for 24+ months. Propensity model suggests 42% would respond to personalised upgrade ask, with average uplift of £8/month. <em>Projected annual impact: £14,400.</em></div>
+                        <div class="ins-meta">Model: Upgrade Propensity v1.3 &middot; Confidence: 78% &middot; Source: <span class="ins-source">Payment Records</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="fundraising" data-priority="medium">
+                        <span class="ins-badge med">Medium</span><span class="ins-badge cat">Fundraising</span>
+                        <div class="ins-text"><strong>Digital channel shift:</strong> Online donations grew 12% YoY while direct mail declined 6%. Recommend reallocating 15% of direct mail budget to digital acquisition. <em>Projected improvement: +£62,000 net income at lower cost per acquisition.</em></div>
+                        <div class="ins-meta">Model: Channel Attribution v1.0 &middot; Confidence: 72% &middot; Source: <span class="ins-source">Multi-channel</span></div>
+                    </div>
+
+                    <!-- Partnership Insights -->
+                    <div class="insight-card" data-vertical="partnerships" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Partnerships</span>
+                        <div class="ins-text"><strong>At-risk partnership alert:</strong> University of Leeds partnership (Health Score 64, down 14 points in 6 months) shows declining engagement frequency and missed project milestones. <em>Recommended: schedule strategic review meeting within 2 weeks.</em></div>
+                        <div class="ins-meta">Model: Partnership Health v2.0 &middot; Confidence: 88% &middot; Source: <span class="ins-source">CRM + Project Tracker</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="partnerships" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Partnerships</span>
+                        <div class="ins-text"><strong>Corporate pipeline opportunity:</strong> Scoring model identifies 12 FTSE 350 companies with strong CSR alignment to homelessness and youth development. 3 have existing community programmes in Northern England. <em>Recommended: initiate outreach to top 5 scored prospects.</em></div>
+                        <div class="ins-meta">Model: Prospect Scoring v1.2 &middot; Confidence: 76% &middot; Source: <span class="ins-source">External CSR Data</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="partnerships" data-priority="medium">
+                        <span class="ins-badge med">Medium</span><span class="ins-badge cat">Partnerships</span>
+                        <div class="ins-text"><strong>Grant renewal preparation:</strong> National Lottery Community Fund grant (£520,000) due for renewal in Q3 2026. Historical data shows 78% renewal rate for similar grants. <em>Recommend starting impact report preparation 4 months ahead.</em></div>
+                        <div class="ins-meta">Model: Grant Lifecycle v1.1 &middot; Confidence: 82% &middot; Source: <span class="ins-source">Grant Records</span></div>
+                    </div>
+
+                    <!-- Operations Insights -->
+                    <div class="insight-card" data-vertical="operations" data-priority="critical">
+                        <span class="ins-badge crit">Critical</span><span class="ins-badge cat">Operations</span>
+                        <div class="ins-text"><strong>Winter demand surge predicted:</strong> Forecasting model predicts 28% increase in service demand over the next 8 weeks based on seasonal patterns, weather forecasts, and economic indicators. Current capacity at 97%. <em>Recommended: activate surge volunteer recruitment and partner referral pathways.</em></div>
+                        <div class="ins-meta">Model: Demand Forecast v3.0 &middot; Confidence: 86% &middot; Source: <span class="ins-source">Multi-source</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="operations" data-priority="high">
+                        <span class="ins-badge high">High</span><span class="ins-badge cat">Operations</span>
+                        <div class="ins-text"><strong>Volunteer burnout risk:</strong> 42 volunteers have logged 20+ hours/week for 3+ consecutive months. Retention model flags these as high burnout risk (68% probability of departure within 90 days). <em>Recommended: implement wellness check-ins and schedule relief rotations.</em></div>
+                        <div class="ins-meta">Model: Volunteer Retention v1.4 &middot; Confidence: 81% &middot; Source: <span class="ins-source">Volunteer System</span></div>
+                    </div>
+                    <div class="insight-card" data-vertical="operations" data-priority="medium">
+                        <span class="ins-badge med">Medium</span><span class="ins-badge cat">Operations</span>
+                        <div class="ins-text"><strong>Service delivery gap in Sheffield:</strong> Demand-to-capacity ratio in Sheffield region is 1.4x vs 0.9x in other regions. Travel time analysis shows 18% of Sheffield beneficiaries travel 40+ minutes to reach services. <em>Recommended: evaluate satellite service point or mobile delivery model.</em></div>
+                        <div class="ins-meta">Model: Geospatial Analysis v1.0 &middot; Confidence: 74% &middot; Source: <span class="ins-source">Service Records</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: SOLUTIONS
+     ══════════════════════════════════════════════════════════ -->
+<div id="pg-solutions" class="page">
+    <section class="pg-hero">
+        <h1>Our Not-For-Profit Solutions</h1>
+        <p>Purpose-built analytics and AI for charities and social enterprises, aligned to Microsoft Azure &amp; Fabric.</p>
+    </section>
+    <div class="sol-grid">
+        <div class="sol-card"><div class="sol-icon" style="background:rgba(44,131,211,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><h3>Fundraising Analytics Platform</h3><p>Donor data integration, segmentation, and personalisation model with real-time campaign dashboards. Built on Microsoft Fabric and Power BI.</p><div class="sol-stats"><span class="sol-stat"><strong>62%</strong> Avg retention uplift</span><span class="sol-stat"><strong>4.5:1</strong> Fundraising ROI</span></div></div>
+        <div class="sol-card"><div class="sol-icon" style="background:rgba(136,118,228,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div><h3>Partnership Intelligence Suite</h3><p>Central repository for partnership data with AI-powered scoring model. Track collaboration health, funding trends, and strategic alignment.</p><div class="sol-stats"><span class="sol-stat"><strong>47</strong> Partners scored</span><span class="sol-stat"><strong>91%</strong> Project completion</span></div></div>
+        <div class="sol-card"><div class="sol-icon" style="background:rgba(16,202,114,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><h3>Operational Efficiency Platform</h3><p>Volunteer data integration, service demand forecasting, and resource allocation. Predict and plan for demand surges with ML models.</p><div class="sol-stats"><span class="sol-stat"><strong>86%</strong> Volunteer utilisation</span><span class="sol-stat"><strong>84%</strong> Forecast accuracy</span></div></div>
+        <div class="sol-card"><div class="sol-icon" style="background:rgba(234,179,8,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><h3>Nonprofit Data Accelerator</h3><p>Pre-configured Azure + Fabric data platform with CDM for Nonprofits. Medallion lakehouse (Bronze/Silver/Gold) with pre-built pipelines and semantic models.</p><div class="sol-stats"><span class="sol-stat"><strong>90+</strong> CDM entities</span><span class="sol-stat"><strong>3</strong> Data tiers</span></div></div>
+        <div class="sol-card"><div class="sol-icon" style="background:rgba(239,68,68,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M12 2a10 10 0 00-6.88 17.23L12 22l6.88-2.77A10 10 0 0012 2z"/><circle cx="12" cy="10" r="3"/></svg></div><h3>AI &amp; Advanced Analytics</h3><p>Donor propensity models, partnership scoring, demand forecasting, beneficiary outcome prediction. Built on Azure ML and integrated with Power BI.</p><div class="sol-stats"><span class="sol-stat"><strong>9</strong> AI models</span><span class="sol-stat"><strong>84%</strong> Avg accuracy</span></div></div>
+        <div class="sol-card"><div class="sol-icon" style="background:rgba(16,202,114,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><h3>Data Strategy &amp; Governance</h3><p>Data maturity assessment, operating model design, GDPR compliance frameworks, and SORP 2026 reporting alignment for charities.</p><div class="sol-stats"><span class="sol-stat"><strong>7</strong> Maturity dimensions</span><span class="sol-stat"><strong>3</strong> SORP tiers</span></div></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: CASE STUDIES
+     ══════════════════════════════════════════════════════════ -->
+<div id="pg-casestudies" class="page">
+    <section class="pg-hero">
+        <h1>Case Studies</h1>
+        <p>See how charities and social enterprises are transforming their operations with data analytics and AI.</p>
+    </section>
+    <div class="cs-grid">
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#8876E4 0%,#1E8BC8 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div></div><div class="cs-body"><h3>Hope &amp; Compass: Fundraising Analytics Transformation</h3><p>Implemented centralised donor data platform integrating CRM, email, and online giving. Donor segmentation model increased retention by 14% and identified £153k in lapsed donor re-activation opportunities.</p><div class="cs-metrics"><div class="cs-metric"><strong>62%</strong> donor retention</div><div class="cs-metric"><strong>£8.2M</strong> total income</div></div><span class="cs-tag badge b-info">Fundraising</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#10CA72 0%,#226A92 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div></div><div class="cs-body"><h3>Northern Youth Trust: Partnership Intelligence</h3><p>Built partnership scoring model tracking 47 active collaborations. Identified 4 at-risk partnerships early, preventing £340k in potential funding loss. Increased project completion rate to 91%.</p><div class="cs-metrics"><div class="cs-metric"><strong>47</strong> partnerships scored</div><div class="cs-metric"><strong>£5.25M</strong> partner funding</div></div><span class="cs-tag badge b-ok">Partnerships</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#F97316 0%,#2A4149 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div></div><div class="cs-body"><h3>Safe Spaces UK: Operational Demand Forecasting</h3><p>Deployed ML demand forecasting model achieving 84% accuracy. Reduced service gaps by 23% and optimised volunteer deployment across 34 locations in Northern England.</p><div class="cs-metrics"><div class="cs-metric"><strong>84%</strong> forecast accuracy</div><div class="cs-metric"><strong>28,450</strong> beneficiaries</div></div><span class="cs-tag badge b-warn">Operations</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#EF4444 0%,#2A4149 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div></div><div class="cs-body"><h3>Community First Network: Data Platform Build</h3><p>Built Azure Fabric data lakehouse with medallion architecture. Unified 8 source systems into a single analytical platform, reducing reporting time from 3 days to 15 minutes.</p><div class="cs-metrics"><div class="cs-metric"><strong>8</strong> systems unified</div><div class="cs-metric"><strong>95%</strong> faster reporting</div></div><span class="cs-tag badge b-err">Data Platform</span></div></div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE: CONTACT
+     ══════════════════════════════════════════════════════════ -->
+<div id="pg-contact" class="page">
+    <section class="pg-hero">
+        <h1>Get In Touch</h1>
+        <p>Ready to transform your charity's data capabilities? Book a demo or speak to our team.</p>
+    </section>
+    <div class="contact-grid">
+        <div class="c-form">
+            <h3 style="margin-bottom:1.2rem;font-size:1.15rem">Book a Demo</h3>
+            <label>Name</label><input type="text" placeholder="Your name">
+            <label>Email</label><input type="email" placeholder="your.email@charity.org.uk">
+            <label>Organisation</label><input type="text" placeholder="Your charity or social enterprise">
+            <label>Area of Interest</label>
+            <select>
+                <option>Fundraising Analytics Platform</option>
+                <option>Partnership Intelligence Suite</option>
+                <option>Operational Efficiency Platform</option>
+                <option>Nonprofit Data Accelerator</option>
+                <option>AI &amp; Advanced Analytics</option>
+                <option>Data Strategy &amp; Governance</option>
+                <option>Full Suite Demo</option>
+            </select>
+            <label>Message</label><textarea placeholder="Tell us about your challenges or what you'd like to see in a demo..."></textarea>
+            <button class="c-btn" onclick="alert('Thank you! Our not-for-profit team will be in touch within 24 hours.')">Request Demo</button>
+        </div>
+        <div class="c-info">
+            <div class="c-info-card"><h3>York Office</h3><p>Suite 3, 20 George Hudson Street, York YO1 6WR</p></div>
+            <div class="c-info-card"><h3>Sheffield Office</h3><p>3 Concourse Way, Sheffield City Centre, Sheffield S1 2BJ</p></div>
+            <div class="c-info-card"><h3>Phone</h3><p>+44 (0) 1904 234 510</p></div>
+            <div class="c-info-card"><h3>Website</h3><p><a href="https://www.simpson-associates.co.uk" target="_blank" style="color:var(--blue)">www.simpson-associates.co.uk</a></p></div>
+            <div class="c-info-card"><h3>Accreditations</h3><p>Microsoft Partner of the Year 2024 &middot; ISO 27001 &middot; ISO 9001 &middot; Cyber Essentials Plus &middot; Databricks Partner</p></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════ -->
+<footer class="footer">
+    <p><strong>Simpson Associates</strong> &mdash; Data Transformation Partner to UK Charities &amp; Social Enterprises</p>
+    <p>Demo Environment &ndash; Synthetic Data Only &nbsp;|&nbsp; Built on Microsoft Azure &amp; Fabric</p>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════════════════ -->
+<script>
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════════════════════ */
+function showPage(id,btn){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('pg-'+id).classList.add('active');
+    document.querySelectorAll('.top-tab').forEach(t=>t.classList.remove('active'));
+    if(btn)btn.classList.add('active');
+    window.scrollTo(0,0);
+}
+document.querySelectorAll('.d-tab').forEach(tab=>{
+    tab.addEventListener('click',function(){
+        document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById(this.dataset.panel).classList.add('active');
+    });
+});
+
+/* ═══════════════════════════════════════════════════════════
+   CHART DEFAULTS
+   ═══════════════════════════════════════════════════════════ */
+Chart.defaults.font.family="'Silka','Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.color='#64748B';
+Chart.defaults.plugins.legend.labels.usePointStyle=true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth=8;
+Chart.defaults.plugins.legend.labels.padding=14;
+Chart.defaults.plugins.legend.labels.boxWidth=8;
+Chart.defaults.plugins.tooltip.backgroundColor='#2A4149';
+Chart.defaults.plugins.tooltip.cornerRadius=8;
+Chart.defaults.plugins.tooltip.padding=10;
+const MONTHS=['Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+const COLS={blue:'#2C83D3',purple:'#8876E4',teal:'#10CA72',orange:'#F97316',amber:'#EAB308',red:'#EF4444',navy:'#2A4149'};
+function mkCtx(id){const c=document.getElementById(id);return c?c.getContext('2d'):null;}
+
+/* ═══════════════════════════════════════════════════════════
+   INITIALIZATION
+   ═══════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',function(){
+
+/* ── Hero Donut ──────────────────────────────────────────── */
+const hc=mkCtx('heroDonut');
+if(hc)new Chart(hc,{type:'doughnut',data:{labels:['Individual Giving','Grants & Trusts','Corporate','Events','Trading'],datasets:[{data:[4.2,3.8,2.1,1.4,0.9],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': £'+c.parsed.toFixed(1)+'M'}}}}});
+
+/* ═══════════════════════════════════════════════════════════
+   EXECUTIVE SUMMARY CHARTS
+   ═══════════════════════════════════════════════════════════ */
+const et=mkCtx('execTrendChart');
+if(et)new Chart(et,{type:'bar',data:{labels:MONTHS,datasets:[
+    {label:'Donations',data:[580,620,710,650,690,720,750,680,810,890,720,780],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.7},
+    {label:'Grants',data:[280,310,340,290,320,350,380,310,420,390,350,380],backgroundColor:COLS.purple,borderRadius:4,barPercentage:.7},
+    {label:'Earned',data:[90,95,110,100,105,120,130,110,140,150,120,130],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.7}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+
+const es=mkCtx('execSourceChart');
+if(es)new Chart(es,{type:'doughnut',data:{labels:['Individual Giving','Grants & Trusts','Corporate Sponsors','Events & Community','Trading & Earned'],datasets:[{data:[34,31,17,11,7],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{size:10}}}}}});
+
+const ei=mkCtx('execImpactChart');
+if(ei)new Chart(ei,{type:'bar',data:{labels:['Safe Homes','Future Foundations','Community Wellbeing','Youth Development','Mental Health'],datasets:[
+    {label:'Actual',data:[92,78,88,71,85],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.65},
+    {label:'Target',data:[85,80,90,75,80],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.65}
+]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{position:'top'}}}});
+
+const er=mkCtx('execRadarChart');
+if(er)new Chart(er,{type:'radar',data:{labels:['Income Growth','Donor Retention','Fundraising Efficiency','Data Maturity','Impact Delivery','Financial Resilience'],datasets:[
+    {label:'Hope & Compass',data:[78,82,75,65,88,72],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
+    {label:'Sector Average',data:[55,40,60,42,65,58],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
+
+/* ═══════════════════════════════════════════════════════════
+   FUNDRAISING CHARTS
+   ═══════════════════════════════════════════════════════════ */
+const ft=mkCtx('frTrendChart');
+if(ft)new Chart(ft,{type:'line',data:{labels:MONTHS,datasets:[
+    {label:'This Year',data:[580,620,710,650,690,720,750,680,810,890,720,780],borderColor:COLS.blue,backgroundColor:COLS.blue+'15',fill:true,tension:.3,pointRadius:3,borderWidth:2},
+    {label:'Prior Year',data:[520,560,640,610,630,660,680,620,740,800,680,710],borderColor:COLS.purple,backgroundColor:'transparent',borderDash:[5,5],tension:.3,pointRadius:2,borderWidth:1.5}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+
+const fs=mkCtx('frSegChart');
+if(fs)new Chart(fs,{type:'doughnut',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'],datasets:[{data:[42,318,3840,8920,4150],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.red+'80'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:10}}}}}});
+
+const fc=mkCtx('frCampaignChart');
+if(fc)new Chart(fc,{type:'bar',data:{labels:['Winter Appeal','Spring Gala','Big Give','Emergency','Youth Futures','Legacy','Corporate','Regular Giving'],datasets:[
+    {label:'Income (£k)',data:[420,380,310,290,180,520,340,280],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.7},
+    {label:'Cost (£k)',data:[62,85,38,42,28,18,52,45],backgroundColor:COLS.red+'60',borderRadius:4,barPercentage:.7}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+
+const fch=mkCtx('frChannelChart');
+if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','Major Gifts','Phone'],datasets:[{data:[45,22,15,12,6],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}}}});
+
+const fret=mkCtx('frRetentionChart');
+if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[
+    {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,tension:.3,pointRadius:4,borderWidth:2},
+    {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,tension:.3,pointRadius:3,borderWidth:1.5,borderDash:[5,5]},
+    {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,tension:.3,pointRadius:3,borderWidth:1.5,borderDash:[3,3]}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:0,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+
+const fltv=mkCtx('frLTVChart');
+if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
+
+/* ═══════════════════════════════════════════════════════════
+   PARTNERSHIP CHARTS
+   ═══════════════════════════════════════════════════════════ */
+const ph=mkCtx('ptHealthChart');
+if(ph)new Chart(ph,{type:'bar',data:{labels:['Platinum (90-100)','Gold (75-89)','Silver (60-74)','Bronze (<60)'],datasets:[{label:'Partners',data:[8,18,15,6],backgroundColor:[COLS.teal,COLS.blue,COLS.amber,COLS.red+'80'],borderRadius:4,barPercentage:.55}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},beginAtZero:true}},plugins:{legend:{display:false}}}});
+
+const pty=mkCtx('ptTypeChart');
+if(pty)new Chart(pty,{type:'doughnut',data:{labels:['Corporate Sponsor','Grant Funder','Statutory','Trust/Foundation','Academic','Community'],datasets:[{data:[1.8,1.2,0.95,0.7,0.35,0.25],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber,COLS.red],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:10}}},tooltip:{callbacks:{label:c=>c.label+': £'+c.parsed.toFixed(2)+'M'}}}}});
+
+const ptt=mkCtx('ptTrendChart');
+if(ptt)new Chart(ptt,{type:'line',data:{labels:MONTHS,datasets:[
+    {label:'Corporate',data:[140,155,160,150,165,170,180,165,195,210,175,190],borderColor:COLS.blue,fill:false,tension:.3,pointRadius:2,borderWidth:2},
+    {label:'Grants',data:[85,90,100,95,105,110,115,100,125,120,110,115],borderColor:COLS.purple,fill:false,tension:.3,pointRadius:2,borderWidth:2},
+    {label:'Statutory',data:[70,75,80,78,82,85,88,80,92,95,82,88],borderColor:COLS.teal,fill:false,tension:.3,pointRadius:2,borderWidth:2}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+
+const ptr=mkCtx('ptRadarChart');
+if(ptr)new Chart(ptr,{type:'radar',data:{labels:['Funding Success','Project Success','Strategic Alignment','Collaboration Freq.'],datasets:[
+    {label:'Barclays Foundation',data:[92,88,85,78],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
+    {label:'National Lottery CF',data:[85,92,90,65],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',pointBackgroundColor:COLS.teal,pointRadius:3},
+    {label:'Yorkshire Housing',data:[78,82,88,92],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
+
+const pac=mkCtx('ptActivityChart');
+if(pac)new Chart(pac,{type:'bar',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23','W24'],datasets:[
+    {label:'Meetings',data:[12,15,8,18,14,16,11,19,13,17,15,20,12,14,18,16,13,21,15,17,14,19,16,22],backgroundColor:COLS.blue,borderRadius:2,barPercentage:.8},
+    {label:'Communications',data:[28,32,24,35,30,28,26,38,25,33,30,42,28,32,36,34,29,40,32,35,30,38,34,45],backgroundColor:COLS.purple+'60',borderRadius:2,barPercentage:.8}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}},y:{stacked:true,grid:{color:'#f0f0f0'}}},plugins:{legend:{position:'top'}}}});
+
+/* ── Partnership Table Data ──────────────────────────────── */
+const PARTNERS=[
+    {name:'Barclays Foundation',type:'Corporate',value:'£420,000',score:94,trend:'+3',status:'Platinum'},
+    {name:'National Lottery CF',type:'Grant Funder',value:'£520,000',score:92,trend:'+5',status:'Platinum'},
+    {name:'Yorkshire Housing',type:'Corporate',value:'£180,000',score:91,trend:'+2',status:'Platinum'},
+    {name:'Big Lottery Fund',type:'Grant Funder',value:'£380,000',score:89,trend:'+1',status:'Gold'},
+    {name:'Garfield Weston',type:'Trust/Foundation',value:'£150,000',score:87,trend:'+4',status:'Gold'},
+    {name:'Leeds City Council',type:'Statutory',value:'£310,000',score:85,trend:'0',status:'Gold'},
+    {name:'Lloyds Bank Foundation',type:'Trust/Foundation',value:'£120,000',score:84,trend:'+2',status:'Gold'},
+    {name:'Joseph Rowntree',type:'Trust/Foundation',value:'£95,000',score:82,trend:'-1',status:'Gold'},
+    {name:'Sheffield Hallam Uni',type:'Academic',value:'£65,000',score:78,trend:'+6',status:'Gold'},
+    {name:'Aviva Community Fund',type:'Corporate',value:'£85,000',score:76,trend:'-2',status:'Gold'},
+    {name:'Newcastle CC',type:'Statutory',value:'£240,000',score:74,trend:'-3',status:'Silver'},
+    {name:'Manchester CC',type:'Statutory',value:'£195,000',score:72,trend:'-1',status:'Silver'},
+    {name:'Tudor Trust',type:'Trust/Foundation',value:'£110,000',score:70,trend:'+1',status:'Silver'},
+    {name:'University of Leeds',type:'Academic',value:'£45,000',score:64,trend:'-14',status:'Silver'},
+    {name:'Sainsbury Foundation',type:'Corporate',value:'£55,000',score:58,trend:'-8',status:'Bronze'},
+    {name:'Community First',type:'Community',value:'£28,000',score:52,trend:'-5',status:'Bronze'}
+];
+const ptb=document.getElementById('partnerTableBody');
+if(ptb)PARTNERS.forEach(p=>{
+    const sc=p.score>=90?'background:rgba(16,202,114,.1);color:#10CA72':p.score>=75?'background:rgba(44,131,211,.1);color:#2C83D3':p.score>=60?'background:rgba(234,179,8,.12);color:#b8860b':'background:rgba(239,68,68,.1);color:#EF4444';
+    const tc=p.trend.startsWith('+')?'color:var(--green)':p.trend.startsWith('-')?'color:var(--red)':'color:var(--g400)';
+    ptb.innerHTML+=`<tr><td class="font-bold">${p.name}</td><td>${p.type}</td><td class="mono">${p.value}</td><td class="mono">${p.score}</td><td style="${tc};font-weight:600">${p.trend}</td><td><span class="badge" style="${sc}">${p.status}</span></td></tr>`;
+});
+
+/* ── At-Risk Grid ────────────────────────────────────────── */
+const arg=document.getElementById('atRiskGrid');
+if(arg){
+    const atRisk=[
+        {name:'University of Leeds',score:64,drop:14,issue:'Declining engagement, missed milestones',action:'Schedule strategic review'},
+        {name:'Sainsbury Foundation',score:58,drop:8,issue:'Reduced funding commitment signals',action:'Relationship rebuilding meeting'},
+        {name:'Community First',score:52,drop:5,issue:'Low collaboration frequency',action:'Joint activity planning session'},
+        {name:'Newcastle CC',score:74,drop:3,issue:'Budget uncertainty post-election',action:'Alternative funding contingency'}
+    ];
+    atRisk.forEach(r=>{
+        arg.innerHTML+=`<div class="span6" style="padding:.85rem"><div style="font-weight:600;font-size:.85rem;color:var(--red);margin-bottom:.25rem">${r.name} <span class="badge b-err" style="font-size:.6rem;vertical-align:middle">${r.score}/100</span></div><div style="font-size:.78rem;color:var(--g600);margin-bottom:.35rem">${r.issue} (down ${r.drop} pts)</div><div style="font-size:.75rem;color:var(--blue);font-weight:500">Action: ${r.action}</div></div>`;
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   OPERATIONS CHARTS
+   ═══════════════════════════════════════════════════════════ */
+const od=mkCtx('opDemandChart');
+if(od){
+    const hist=[2100,2250,2400,2180,2320,2500,2650,2450,2800,3100,2700,2900];
+    const fore=[null,null,null,null,null,null,null,null,null,null,null,2900,3200,3400];
+    const upper=[null,null,null,null,null,null,null,null,null,null,null,3100,3500,3700];
+    const lower=[null,null,null,null,null,null,null,null,null,null,null,2700,2900,3100];
+    const labels=[...MONTHS,'Mar*','Apr*'];
+    new Chart(od,{type:'line',data:{labels:labels,datasets:[
+        {label:'Actual',data:hist,borderColor:COLS.blue,backgroundColor:COLS.blue+'15',fill:true,tension:.3,pointRadius:3,borderWidth:2},
+        {label:'Forecast',data:fore,borderColor:COLS.purple,backgroundColor:COLS.purple+'10',fill:true,tension:.3,pointRadius:4,borderWidth:2,borderDash:[5,5]},
+        {label:'Upper CI',data:upper,borderColor:'transparent',backgroundColor:COLS.purple+'08',fill:'+1',pointRadius:0,borderWidth:0},
+        {label:'Lower CI',data:lower,borderColor:'transparent',backgroundColor:'transparent',fill:false,pointRadius:0,borderWidth:0}
+    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},title:{display:true,text:'Service Sessions'}}},plugins:{legend:{position:'top',labels:{filter:i=>i.text!=='Upper CI'&&i.text!=='Lower CI'}}}}});
+}
+
+const ov=mkCtx('opVolChart');
+if(ov)new Chart(ov,{type:'bar',data:{labels:MONTHS,datasets:[
+    {label:'Safe Homes',data:[4200,4500,4800,4300,4600,4900,5200,4700,5500,6100,5300,5600],backgroundColor:COLS.blue,borderRadius:3,barPercentage:.75},
+    {label:'Future Foundations',data:[2800,3000,3200,2900,3100,3300,3500,3200,3800,4000,3500,3700],backgroundColor:COLS.purple,borderRadius:3,barPercentage:.75},
+    {label:'Community Wellbeing',data:[1800,1900,2000,1850,1950,2100,2200,2000,2400,2600,2200,2400],backgroundColor:COLS.teal,borderRadius:3,barPercentage:.75}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000).toFixed(0)+'k hrs'}}},plugins:{legend:{position:'top'}}}});
+
+/* ── 7-Day Forecast Cards ────────────────────────────────── */
+const ofg=document.getElementById('opForecastGrid');
+if(ofg){
+    const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const vals=[142,138,155,148,162,98,72];
+    const cis=['±12','±14','±11','±13','±10','±18','±22'];
+    const confs=[88,85,89,86,90,78,74];
+    days.forEach((d,i)=>{
+        ofg.innerHTML+=`<div class="fc-card"><div class="fc-day">${d}</div><div class="fc-val">${vals[i]}</div><div class="fc-ci">${cis[i]} sessions</div><div class="fc-conf">${confs[i]}% conf</div></div>`;
+    });
+}
+
+const ores=mkCtx('opResourceChart');
+if(ores)new Chart(ores,{type:'bar',data:{labels:['Case Workers','Volunteers','Support Staff','Transport','Facilities'],datasets:[
+    {label:'Available',data:[48,1247,32,12,8],backgroundColor:COLS.blue+'40',borderRadius:4,barPercentage:.55},
+    {label:'Deployed',data:[45,1074,28,11,7],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.55}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'}}},plugins:{legend:{position:'top'}}}});
+
+const oout=mkCtx('opOutcomeChart');
+if(oout)new Chart(oout,{type:'bar',data:{labels:['Housing Secured','Employment','Mental Health','Education','Family Reunion'],datasets:[
+    {label:'Achieved',data:[92,68,85,78,88],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.55},
+    {label:'Target',data:[85,75,80,80,85],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.55}
+]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{position:'top'}}}});
+
+const oret=mkCtx('opRetentionChart');
+if(oret)new Chart(oret,{type:'line',data:{labels:MONTHS,datasets:[{label:'Volunteer Retention %',data:[68,69,70,69,71,72,71,73,72,74,73,71],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:60,max:80,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+
+/* ── Leaflet Map ─────────────────────────────────────────── */
+const mapEl=document.getElementById('opMap');
+if(mapEl){
+    const map=L.map('opMap',{scrollWheelZoom:false}).setView([53.8,  -1.55],7);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; <a href="https://carto.com">CARTO</a>'}).addTo(map);
+    const locs=[
+        [53.80,-1.55,'Leeds Hub',420],[53.48,-2.24,'Manchester Hub',380],[54.97,-1.62,'Newcastle Hub',310],[53.38,-1.47,'Sheffield Hub',290],
+        [53.96,-1.09,'York Centre',180],[53.79,-1.75,'Bradford',220],[53.57,-0.08,'Grimsby',150],[54.57,-1.24,'Middlesbrough',190],
+        [53.55,-1.48,'Barnsley',130],[54.52,-1.55,'Darlington',110],[53.74,-0.34,'Hull',200],[54.91,-1.38,'Sunderland',170],
+        [53.69,-1.50,'Wakefield',145],[53.65,-1.79,'Huddersfield',160],[53.75,-2.48,'Blackburn',125],[53.76,-2.70,'Preston',155],
+        [54.90,-2.94,'Carlisle',95],[52.92,-1.47,'Derby',175],[53.23,-0.54,'Lincoln',105],[52.63,-1.13,'Leicester',210],
+        [52.95,-1.15,'Nottingham',230],[53.59,-0.65,'Scunthorpe',100],[54.78,-1.58,'Durham',140],[53.19,-2.89,'Chester',115],
+        [54.69,-1.21,'Hartlepool',120],[54.33,-2.75,'Kendal',85],[53.72,-1.86,'Halifax',110],[53.10,-1.50,'Matlock',75],
+        [53.26,-2.13,'Macclesfield',90],[54.05,-2.80,'Lancaster',130],[52.24,-0.90,'Northampton',195],[54.08,-0.40,'Scarborough',105],
+        [53.81,-3.06,'Blackpool',185],[52.41,0.12,'Cambridge',165]
+    ];
+    locs.forEach(l=>{
+        const r=Math.min(l[3]/420,1)*14+5;
+        const c=l[3]>300?COLS.blue:l[3]>200?COLS.purple:l[3]>100?COLS.teal:COLS.amber;
+        L.circleMarker([l[0],l[1]],{radius:r,fillColor:c,color:'#fff',weight:1.5,fillOpacity:.7}).addTo(map).bindPopup(`<strong>${l[2]}</strong><br>${l[3]} beneficiaries/month`);
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BENCHMARKS CHARTS
+   ═══════════════════════════════════════════════════════════ */
+const bc=mkCtx('bmCompareChart');
+if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fundraising ROI','Online Rev %','Vol. Retention','Overhead Ratio'],datasets:[
+    {label:'Hope & Compass',data:[62,78,75,82,71,71],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.6},
+    {label:'Sector Average',data:[40,75,67,58,58,69],backgroundColor:COLS.purple+'60',borderRadius:4,barPercentage:.6},
+    {label:'Top Quartile',data:[68,82,87,100,78,76],backgroundColor:COLS.teal+'60',borderRadius:4,barPercentage:.6}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{position:'top'}}}});
+
+const bm=mkCtx('bmMaturityChart');
+if(bm)new Chart(bm,{type:'radar',data:{labels:['Data Leadership','Data Skills','Data Culture','Data Tools','Data Quality','Data Use','Data Governance'],datasets:[
+    {label:'Hope & Compass',data:[3.8,3.2,3.5,4.0,3.0,3.8,2.8],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
+    {label:'Sector Average',data:[2.4,2.1,2.3,2.8,2.0,2.5,1.9],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{position:'top'}}}});
+
+const bsc=mkCtx('bmScatterChart');
+if(bsc){
+    const gen=(n,cx,cy,sp)=>Array.from({length:n},()=>({x:cx+(Math.random()-.5)*sp,y:cy+(Math.random()-.5)*sp*1.5}));
+    new Chart(bsc,{type:'scatter',data:{datasets:[
+        {label:'Hope & Compass',data:[{x:0.22,y:62}],backgroundColor:COLS.blue,pointRadius:8,pointStyle:'rectRot'},
+        {label:'Peer Charities',data:gen(25,0.25,42,0.15),backgroundColor:COLS.purple+'50',pointRadius:4},
+        {label:'Top Quartile',data:gen(8,0.18,68,0.06),backgroundColor:COLS.teal+'50',pointRadius:4}
+    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Cost per £ Raised'},grid:{color:'#f0f0f0'},min:0.1,max:0.4},y:{title:{display:true,text:'Donor Retention %'},grid:{color:'#f0f0f0'},min:20,max:80}},plugins:{legend:{position:'top'}}}});
+}
+
+const bdv=mkCtx('bmDiversChart');
+if(bdv)new Chart(bdv,{type:'bar',data:{labels:['Hope & Compass','Sector Average','Top Quartile'],datasets:[
+    {label:'Individual Giving',data:[34,42,30],backgroundColor:COLS.blue,barPercentage:.7},
+    {label:'Grants & Trusts',data:[31,28,25],backgroundColor:COLS.purple,barPercentage:.7},
+    {label:'Corporate',data:[17,12,20],backgroundColor:COLS.teal,barPercentage:.7},
+    {label:'Events',data:[11,10,12],backgroundColor:COLS.orange,barPercentage:.7},
+    {label:'Trading/Earned',data:[7,8,13],backgroundColor:COLS.amber,barPercentage:.7}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}});
+
+/* ═══════════════════════════════════════════════════════════
+   AI INSIGHTS FILTERING
+   ═══════════════════════════════════════════════════════════ */
+function filterInsights(){
+    const v=document.getElementById('aiVertical').value;
+    const p=document.getElementById('aiPriority').value;
+    document.querySelectorAll('.insight-card').forEach(c=>{
+        const cv=c.dataset.vertical;
+        const cp=c.dataset.priority;
+        const show=(v==='all'||cv===v)&&(p==='all'||cp===p);
+        c.style.display=show?'':'none';
+    });
+}
+const aiV=document.getElementById('aiVertical');
+const aiP=document.getElementById('aiPriority');
+if(aiV)aiV.addEventListener('change',filterInsights);
+if(aiP)aiP.addEventListener('change',filterInsights);
+
+}); /* end DOMContentLoaded */
+</script>
+</body>
+</html>
