@@ -153,12 +153,10 @@ a:hover{text-decoration:underline}
 .filters label{font-size:.72rem;color:var(--g500);font-weight:500;text-transform:uppercase;letter-spacing:.03em}
 .fsel{font-family:inherit;font-size:.78rem;padding:.4rem .7rem;border:1px solid var(--g200);border-radius:6px;background:#fff;color:var(--navy);cursor:pointer;outline:none}
 .fsel:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(44,131,211,.12)}
-.toggle{position:relative;display:inline-block;width:36px;height:20px}
-.toggle input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--g300);border-radius:20px;transition:.3s}
-.slider::before{content:'';position:absolute;height:16px;width:16px;left:2px;bottom:2px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.toggle input:checked+.slider{background:var(--blue)}
-.toggle input:checked+.slider::before{transform:translateX(16px)}
+.toggle{position:relative;width:44px;height:24px;background:var(--g300);border-radius:12px;cursor:pointer;transition:.3s;flex-shrink:0}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.toggle.on::after{transform:translateX(20px)}
 
 /* ── Data Table ────────────────────────────────────────── */
 .table-scroll{overflow-x:auto;padding:0 1.25rem 1.25rem}
@@ -244,7 +242,7 @@ a:hover{text-decoration:underline}
 .c-form .error{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(239,68,68,.1)!important}
 
 /* ── Chart Containers ───────────────────────────────────── */
-.chart-box{position:relative;width:100%;height:260px;padding:1rem 1.25rem}
+.chart-box{position:relative;width:100%;height:280px;padding:1rem 1.25rem}
 .chart-box.tall{height:340px}
 .chart-box.short{height:200px}
 .chart-box canvas{width:100%!important;height:100%!important}
@@ -260,12 +258,9 @@ a:hover{text-decoration:underline}
 .filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 
 /* ── Toggle Switch ──────────────────────────────────────── */
-.toggle-wrap{display:flex;align-items:center;gap:.5rem}
-.toggle{position:relative;width:36px;height:20px;background:var(--g300);border-radius:20px;cursor:pointer;transition:background .2s;flex-shrink:0}
-.toggle.on{background:var(--blue)}
-.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.toggle.on::after{transform:translateX(16px)}
-.toggle-label{font-size:.75rem;color:var(--g600)}
+.toggle-wrap{display:flex;align-items:center;gap:.5rem;margin-left:auto}
+.toggle-wrap>label{font-size:.8rem;color:var(--g500);font-weight:500}
+.toggle-label{font-size:.8rem;color:var(--g500);font-weight:500}
 
 /* ── Map Container ──────────────────────────────────────── */
 .map-wrap{border-radius:var(--radius);overflow:hidden;height:400px;border:1px solid var(--g200)}
@@ -532,7 +527,7 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="frPeriod"><option value="12">Last 12 Months</option><option value="6">Last 6 Months</option><option value="3">Last 3 Months</option><option value="all">All Time</option></select>
                 <label>Campaign:</label>
                 <select class="fsel" id="frCampaign"><option value="all">All Campaigns</option><option value="winter">Winter Appeal 2025</option><option value="gala">Spring Gala</option><option value="biggive">Big Give Christmas</option><option value="emergency">Emergency Housing Appeal</option><option value="youth">Youth Futures Campaign</option><option value="legacy">Legacy Giving Programme</option><option value="corporate">Corporate Partnerships</option><option value="regular">Regular Giving Acquisition</option></select>
-                <div class="toggle-wrap"><label>Show segments</label><label class="toggle"><input type="checkbox" id="frSegToggle"><span class="slider"></span></label></div>
+                <div class="toggle-wrap"><label>Show segments</label><div class="toggle" id="frSegToggle"></div></div>
             </div>
 
             <!-- KPI Row -->
@@ -604,7 +599,7 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="ptType"><option value="all">All Types</option><option value="corporate">Corporate Sponsor</option><option value="grant">Grant Funder</option><option value="statutory">Statutory</option><option value="trust">Trust/Foundation</option><option value="academic">Academic</option><option value="community">Community</option></select>
                 <label>Health:</label>
                 <select class="fsel" id="ptHealth"><option value="all">All Bands</option><option value="platinum">Platinum (90-100)</option><option value="gold">Gold (75-89)</option><option value="silver">Silver (60-74)</option><option value="bronze">Bronze (&lt;60)</option></select>
-                <div class="toggle-wrap"><label>Show funding view</label><label class="toggle"><input type="checkbox" id="ptFundToggle"><span class="slider"></span></label></div>
+                <div class="toggle-wrap"><label>Show funding view</label><div class="toggle" id="ptFundToggle"></div></div>
             </div>
 
             <!-- KPI Row -->
@@ -668,8 +663,7 @@ a:hover{text-decoration:underline}
                 <select class="fsel" id="opProg"><option value="all">All Programmes</option><option value="safehomes">Safe Homes</option><option value="futures">Future Foundations</option><option value="wellbeing">Community Wellbeing</option></select>
                 <label>Region:</label>
                 <select class="fsel" id="opRegion"><option value="all">All Regions</option><option value="leeds">Leeds</option><option value="manchester">Manchester</option><option value="newcastle">Newcastle</option><option value="sheffield">Sheffield</option></select>
-                <div class="toggle-wrap"><label>Show forecast</label><label class="toggle"><input type="checkbox" id="opForecastToggle"><span class="slider"></span></label></div>
-            </div>
+                            </div>
 
             <!-- KPI Row -->
             <div class="kpi-row">
@@ -867,13 +861,13 @@ a:hover{text-decoration:underline}
 <div id="pg-casestudies" class="page">
     <section class="pg-hero">
         <h1>Case Studies</h1>
-        <p>See how charities and social enterprises are transforming their operations with data analytics and AI.</p>
+        <p>See how charities, housing associations, and social enterprises are transforming their organisations with Simpson Associates.</p>
     </section>
     <div class="cs-grid">
-        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#8876E4 0%,#1E8BC8 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div></div><div class="cs-body"><h3>Hope &amp; Compass: Fundraising Analytics Transformation</h3><p>Implemented centralised donor data platform integrating CRM, email, and online giving. Donor segmentation model increased retention by 14% and identified £153k in lapsed donor re-activation opportunities.</p><div class="cs-metrics"><div class="cs-metric"><strong>62%</strong> donor retention</div><div class="cs-metric"><strong>£8.2M</strong> total income</div></div><span class="cs-tag badge b-info">Fundraising</span></div></div>
-        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#10CA72 0%,#226A92 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div></div><div class="cs-body"><h3>Northern Youth Trust: Partnership Intelligence</h3><p>Built partnership scoring model tracking 47 active collaborations. Identified 4 at-risk partnerships early, preventing £340k in potential funding loss. Increased project completion rate to 91%.</p><div class="cs-metrics"><div class="cs-metric"><strong>47</strong> partnerships scored</div><div class="cs-metric"><strong>£5.25M</strong> partner funding</div></div><span class="cs-tag badge b-ok">Partnerships</span></div></div>
-        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#F97316 0%,#2A4149 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div></div><div class="cs-body"><h3>Safe Spaces UK: Operational Demand Forecasting</h3><p>Deployed ML demand forecasting model achieving 84% accuracy. Reduced service gaps by 23% and optimised volunteer deployment across 34 locations in Northern England.</p><div class="cs-metrics"><div class="cs-metric"><strong>84%</strong> forecast accuracy</div><div class="cs-metric"><strong>28,450</strong> beneficiaries</div></div><span class="cs-tag badge b-warn">Operations</span></div></div>
-        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#EF4444 0%,#2A4149 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div></div><div class="cs-body"><h3>Community First Network: Data Platform Build</h3><p>Built Azure Fabric data lakehouse with medallion architecture. Unified 8 source systems into a single analytical platform, reducing reporting time from 3 days to 15 minutes.</p><div class="cs-metrics"><div class="cs-metric"><strong>8</strong> systems unified</div><div class="cs-metric"><strong>95%</strong> faster reporting</div></div><span class="cs-tag badge b-err">Data Platform</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#EF4444 0%,#1E8BC8 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div></div><div class="cs-body"><h3>British Heart Foundation: Data Science Platform</h3><p>Built a Databricks Data Intelligence Platform on Microsoft Azure, enabling the BHF to unify research data across their national defibrillator network and RevivR CPR training app. Spatial analysis time reduced from 3+ days to under 6 minutes using H3 indexing and Delta Lake.</p><div class="cs-metrics"><div class="cs-metric"><strong>75%</strong> faster analysis</div><div class="cs-metric"><strong>1.5bn</strong> rows ingested</div></div><span class="cs-tag badge b-err">Data Platform</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#8876E4 0%,#226A92 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div></div><div class="cs-body"><h3>Alzheimer&rsquo;s Society: Volunteer Insights Platform</h3><p>Built a modern data and analytics platform on Azure Synapse and Power BI, unifying fragmented volunteer data across multiple systems. Enabled data-driven recruitment, training, and retention strategies supporting 800,000 people with dementia annually.</p><div class="cs-metrics"><div class="cs-metric"><strong>Unified</strong> volunteer view</div><div class="cs-metric"><strong>800k</strong> people supported</div></div><span class="cs-tag badge b-ok">Volunteer Analytics</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#10CA72 0%,#2A4149 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div></div><div class="cs-body"><h3>Commissioning Alliance: Children&rsquo;s Social Care Analytics</h3><p>Designed and delivered an Azure data warehouse serving 66 local authorities across England, centralising SSDA903 children&rsquo;s social care data. Power BI dashboards enabled self-service reporting and cross-council collaboration on looked-after children outcomes.</p><div class="cs-metrics"><div class="cs-metric"><strong>66</strong> local authorities</div><div class="cs-metric"><strong>SSDA903</strong> data unified</div></div><span class="cs-tag badge b-info">Data Platform</span></div></div>
+        <div class="cs-card"><div class="cs-top" style="background:linear-gradient(-37deg,#F97316 0%,#2A4149 98%)"><div class="cs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div></div><div class="cs-body"><h3>Flagship Group: Modern Data Analytics Assessment</h3><p>Conducted a comprehensive data analytics assessment for the 32,000-home housing association, designing a Microsoft Fabric and medallion architecture roadmap. Upskilled the team in Azure, Power BI, and advanced data lake techniques with Purview for governance.</p><div class="cs-metrics"><div class="cs-metric"><strong>32,000</strong> homes managed</div><div class="cs-metric"><strong>Fabric</strong> roadmap</div></div><span class="cs-tag badge b-warn">Strategy</span></div></div>
     </div>
 </div>
 
@@ -965,9 +959,11 @@ document.querySelectorAll('.d-tab').forEach(tab=>{
 Chart.defaults.font.family="'Silka','Segoe UI',system-ui,sans-serif";
 Chart.defaults.font.size=11;
 Chart.defaults.color='#64748B';
+Chart.defaults.plugins.legend.position='bottom';
 Chart.defaults.plugins.legend.labels.usePointStyle=true;
+Chart.defaults.plugins.legend.labels.pointStyle='circle';
 Chart.defaults.plugins.legend.labels.pointStyleWidth=8;
-Chart.defaults.plugins.legend.labels.padding=14;
+Chart.defaults.plugins.legend.labels.padding=15;
 Chart.defaults.plugins.legend.labels.boxWidth=8;
 Chart.defaults.plugins.tooltip.backgroundColor='#2A4149';
 Chart.defaults.plugins.tooltip.cornerRadius=8;
@@ -996,22 +992,22 @@ if(et)new Chart(et,{type:'bar',data:{labels:MONTHS,datasets:[
     {label:'Donations',data:[580,620,710,650,690,720,750,680,810,890,720,780],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.7},
     {label:'Grants',data:[280,310,340,290,320,350,380,310,420,390,350,380],backgroundColor:COLS.purple,borderRadius:4,barPercentage:.7},
     {label:'Earned',data:[90,95,110,100,105,120,130,110,140,150,120,130],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.7}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const es=mkCtx('execSourceChart');
-if(es)new Chart(es,{type:'doughnut',data:{labels:['Individual Giving','Grants & Trusts','Corporate Sponsors','Events & Community','Trading & Earned'],datasets:[{data:[34,31,17,11,7],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{font:{size:10}}}}}});
+if(es)new Chart(es,{type:'doughnut',data:{labels:['Individual Giving','Grants & Trusts','Corporate Sponsors','Events & Community','Trading & Earned'],datasets:[{data:[34,31,17,11,7],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff',hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{labels:{padding:12,font:{size:10}}}}}});
 
 const ei=mkCtx('execImpactChart');
 if(ei)new Chart(ei,{type:'bar',data:{labels:['Safe Homes','Future Foundations','Community Wellbeing','Youth Development','Mental Health'],datasets:[
     {label:'Actual',data:[92,78,88,71,85],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.65},
     {label:'Target',data:[85,80,90,75,80],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.65}
-]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{position:'top'}}}});
+]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
 
 const er=mkCtx('execRadarChart');
 if(er)new Chart(er,{type:'radar',data:{labels:['Income Growth','Donor Retention','Fundraising Efficiency','Data Maturity','Impact Delivery','Financial Resilience'],datasets:[
     {label:'Hope & Compass',data:[78,82,75,65,88,72],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
     {label:'Sector Average',data:[55,40,60,42,65,58],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{}}}});
 
 /* ═══════════════════════════════════════════════════════════
    FUNDRAISING CHARTS (lazy)
@@ -1021,26 +1017,26 @@ const ft=mkCtx('frTrendChart');
 if(ft)new Chart(ft,{type:'line',data:{labels:MONTHS,datasets:[
     {label:'This Year',data:[580,620,710,650,690,720,750,680,810,890,720,780],borderColor:COLS.blue,backgroundColor:COLS.blue+'15',fill:true,tension:.3,pointRadius:3,borderWidth:2},
     {label:'Prior Year',data:[520,560,640,610,630,660,680,620,740,800,680,710],borderColor:COLS.purple,backgroundColor:'transparent',borderDash:[5,5],tension:.3,pointRadius:2,borderWidth:1.5}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const fs=mkCtx('frSegChart');
-if(fs)new Chart(fs,{type:'doughnut',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'],datasets:[{data:[42,318,3840,8920,4150],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.red+'80'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:10}}}}}});
+if(fs)new Chart(fs,{type:'doughnut',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'],datasets:[{data:[42,318,3840,8920,4150],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.red+'80'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{labels:{padding:12,font:{size:10}}}}}});
 
 const fc=mkCtx('frCampaignChart');
 if(fc)new Chart(fc,{type:'bar',data:{labels:['Winter Appeal','Spring Gala','Big Give','Emergency','Youth Futures','Legacy','Corporate','Regular Giving'],datasets:[
     {label:'Income (£k)',data:[420,380,310,290,180,520,340,280],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.7},
     {label:'Cost (£k)',data:[62,85,38,42,28,18,52,45],backgroundColor:COLS.red+'60',borderRadius:4,barPercentage:.7}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const fch=mkCtx('frChannelChart');
-if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','Major Gifts','Phone'],datasets:[{data:[45,22,15,12,6],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}}}});
+if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','Major Gifts','Phone'],datasets:[{data:[45,22,15,12,6],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{padding:12,font:{size:10}}}}}});
 
 const fret=mkCtx('frRetentionChart');
 if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[
     {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,backgroundColor:COLS.blue+'25',fill:true,tension:.3,pointRadius:4,borderWidth:2},
     {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,backgroundColor:COLS.purple+'20',fill:true,tension:.3,pointRadius:3,borderWidth:1.5},
     {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.3,pointRadius:3,borderWidth:1.5}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{}}}});
 
 const fltv=mkCtx('frLTVChart');
 if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
@@ -1062,20 +1058,20 @@ if(ptt)new Chart(ptt,{type:'line',data:{labels:MONTHS,datasets:[
     {label:'Corporate',data:[140,155,160,150,165,170,180,165,195,210,175,190],borderColor:COLS.blue,fill:false,tension:.3,pointRadius:2,borderWidth:2},
     {label:'Grants',data:[85,90,100,95,105,110,115,100,125,120,110,115],borderColor:COLS.purple,fill:false,tension:.3,pointRadius:2,borderWidth:2},
     {label:'Statutory',data:[70,75,80,78,82,85,88,80,92,95,82,88],borderColor:COLS.teal,fill:false,tension:.3,pointRadius:2,borderWidth:2}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v+'k'}}},plugins:{legend:{}}}});
 
 const ptr=mkCtx('ptRadarChart');
 if(ptr)new Chart(ptr,{type:'radar',data:{labels:['Funding Success','Project Success','Strategic Alignment','Collaboration Freq.'],datasets:[
     {label:'Barclays Foundation',data:[92,88,85,78],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
     {label:'National Lottery CF',data:[85,92,90,65],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',pointBackgroundColor:COLS.teal,pointRadius:3},
     {label:'Yorkshire Housing',data:[78,82,88,92],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{}}}});
 
 const pac=mkCtx('ptActivityChart');
 if(pac)new Chart(pac,{type:'bar',data:{labels:['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23','W24'],datasets:[
     {label:'Meetings',data:[12,15,8,18,14,16,11,19,13,17,15,20,12,14,18,16,13,21,15,17,14,19,16,22],backgroundColor:COLS.blue,borderRadius:2,barPercentage:.8},
     {label:'Communications',data:[28,32,24,35,30,28,26,38,25,33,30,42,28,32,36,34,29,40,32,35,30,38,34,45],backgroundColor:COLS.purple+'60',borderRadius:2,barPercentage:.8}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}},y:{stacked:true,grid:{color:'#f0f0f0'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:9}}},y:{stacked:true,grid:{color:'#f0f0f0'}}},plugins:{legend:{}}}});
 
 /* ── Partnership Table Data ──────────────────────────────── */
 const PARTNERS=[
@@ -1173,7 +1169,7 @@ if(ov)new Chart(ov,{type:'bar',data:{labels:MONTHS,datasets:[
     {label:'Safe Homes',data:[4200,4500,4800,4300,4600,4900,5200,4700,5500,6100,5300,5600],backgroundColor:COLS.blue,borderRadius:3,barPercentage:.75},
     {label:'Future Foundations',data:[2800,3000,3200,2900,3100,3300,3500,3200,3800,4000,3500,3700],backgroundColor:COLS.purple,borderRadius:3,barPercentage:.75},
     {label:'Community Wellbeing',data:[1800,1900,2000,1850,1950,2100,2200,2000,2400,2600,2200,2400],backgroundColor:COLS.teal,borderRadius:3,barPercentage:.75}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000).toFixed(0)+'k hrs'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000).toFixed(0)+'k hrs'}}},plugins:{legend:{}}}});
 
 /* ── 7-Day Forecast Cards ────────────────────────────────── */
 const ofg=document.getElementById('opForecastGrid');
@@ -1191,16 +1187,16 @@ const ores=mkCtx('opResourceChart');
 if(ores)new Chart(ores,{type:'bar',data:{labels:['Case Workers','Volunteers','Support Staff','Transport','Facilities'],datasets:[
     {label:'Available',data:[48,1247,32,12,8],backgroundColor:COLS.blue+'40',borderRadius:4,barPercentage:.55},
     {label:'Deployed',data:[45,1074,28,11,7],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.55}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'}}},plugins:{legend:{}}}});
 
 const oout=mkCtx('opOutcomeChart');
 if(oout)new Chart(oout,{type:'bar',data:{labels:['Housing Secured','Employment','Mental Health','Education','Family Reunion'],datasets:[
     {label:'Achieved',data:[92,68,85,78,88],backgroundColor:COLS.teal,borderRadius:4,barPercentage:.55},
     {label:'Target',data:[85,75,80,80,85],backgroundColor:COLS.purple+'40',borderRadius:4,barPercentage:.55}
-]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{position:'top'}}}});
+]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}},plugins:{legend:{}}}});
 
 const oret=mkCtx('opRetentionChart');
-if(oret)new Chart(oret,{type:'line',data:{labels:MONTHS,datasets:[{label:'Volunteer Retention %',data:[68,69,70,69,71,72,71,73,72,74,73,71],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:60,max:80,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+if(oret)new Chart(oret,{type:'line',data:{labels:MONTHS,datasets:[{label:'Volunteer Retention %',data:[68,69,70,69,71,72,71,73,72,74,73,71],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.4,pointRadius:3,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:60,max:80,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{}}}});
 
 /* ── Leaflet Map ─────────────────────────────────────────── */
 const mapEl=document.getElementById('opMap');
@@ -1236,13 +1232,13 @@ if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fu
     {label:'Hope & Compass',data:[62,78,75,82,71,71],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.6},
     {label:'Sector Average',data:[40,75,67,58,58,69],backgroundColor:COLS.purple+'60',borderRadius:4,barPercentage:.6},
     {label:'Top Quartile',data:[68,82,87,100,78,76],backgroundColor:COLS.teal+'60',borderRadius:4,barPercentage:.6}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{}}}});
 
 const bm=mkCtx('bmMaturityChart');
 if(bm)new Chart(bm,{type:'radar',data:{labels:['Data','Tools','Leadership','Skills','Culture','Uses','Analysis'],datasets:[
     {label:'Hope & Compass',data:[3.4,3.1,3.6,2.8,3.2,3.5,2.9],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
     {label:'Sector Average',data:[2.8,2.5,2.9,2.4,2.7,2.6,2.3],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{position:'top'}}}});
+]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{}}}});
 
 const bsc=mkCtx('bmScatterChart');
 if(bsc){
@@ -1251,7 +1247,7 @@ if(bsc){
         {label:'Hope & Compass',data:[{x:0.22,y:62}],backgroundColor:COLS.blue,pointRadius:8,pointStyle:'rectRot'},
         {label:'Peer Charities',data:gen(25,0.25,42,0.15),backgroundColor:COLS.purple+'50',pointRadius:4},
         {label:'Top Quartile',data:gen(8,0.18,68,0.06),backgroundColor:COLS.teal+'50',pointRadius:4}
-    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Cost per £ Raised'},grid:{color:'#f0f0f0'},min:0.1,max:0.4},y:{title:{display:true,text:'Donor Retention %'},grid:{color:'#f0f0f0'},min:20,max:80}},plugins:{legend:{position:'top'}}}});
+    ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{title:{display:true,text:'Cost per £ Raised'},grid:{color:'#f0f0f0'},min:0.1,max:0.4},y:{title:{display:true,text:'Donor Retention %'},grid:{color:'#f0f0f0'},min:20,max:80}},plugins:{legend:{}}}});
 }
 
 const bdv=mkCtx('bmDiversChart');
@@ -1303,9 +1299,10 @@ if(frPeriod){
 /* Fundraising segment toggle — switch between count and value view */
 const frSegToggle=document.getElementById('frSegToggle');
 if(frSegToggle){
-    frSegToggle.addEventListener('change',function(){
+    frSegToggle.addEventListener('click',function(){
+        this.classList.toggle('on');
         const ch=Chart.getChart('frSegChart');if(!ch)return;
-        if(this.checked){
+        if(this.classList.contains('on')){
             ch.data.datasets[0].data=[521000,683700,1474000,401400,0];
             ch.data.labels=['Major (£)','Mid-Level (£)','Regular (£)','One-time (£)','Lapsed (£)'];
         }else{
@@ -1346,22 +1343,13 @@ if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
 /* Partnership funding toggle */
 const ptFundToggle=document.getElementById('ptFundToggle');
 if(ptFundToggle){
-    ptFundToggle.addEventListener('change',function(){
+    ptFundToggle.addEventListener('click',function(){
+        this.classList.toggle('on');
         const ch=Chart.getChart('ptTrendChart');if(!ch)return;
         ch.data.datasets.forEach(ds=>{
-            if(this.checked){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
+            if(this.classList.contains('on')){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
             else{ds.fill=false;ds.backgroundColor='transparent';}
         });
-        ch.update();
-    });
-}
-/* Operations forecast toggle */
-const opForecastToggle=document.getElementById('opForecastToggle');
-if(opForecastToggle){
-    opForecastToggle.addEventListener('change',function(){
-        const ch=Chart.getChart('opDemandChart');if(!ch)return;
-        const show=this.checked;
-        [1,2,3].forEach(i=>{ch.data.datasets[i].hidden=!show;});
         ch.update();
     });
 }
