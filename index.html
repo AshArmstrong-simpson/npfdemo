@@ -166,6 +166,10 @@ a:hover{text-decoration:underline}
 .data-table th{text-align:left;font-weight:600;color:var(--g500);text-transform:uppercase;font-size:.68rem;letter-spacing:.04em;padding:.6rem .75rem;border-bottom:2px solid var(--g200);white-space:nowrap}
 .data-table td{padding:.65rem .75rem;border-bottom:1px solid var(--g100);color:var(--navy);vertical-align:middle}
 .data-table tr:hover td{background:rgba(44,131,211,.03)}
+.data-table th{cursor:pointer;user-select:none;transition:color .2s}
+.data-table th:hover{color:var(--blue)}
+.data-table th.sort-asc::after{content:' ▲';font-size:.6rem;color:var(--blue)}
+.data-table th.sort-desc::after{content:' ▼';font-size:.6rem;color:var(--blue)}
 .font-bold{font-weight:600}
 .mono{font-family:'JetBrains Mono','Silka',monospace;font-weight:500}
 
@@ -175,7 +179,7 @@ a:hover{text-decoration:underline}
 
 /* ── Insight Grid (AI Insights panel) - overrides base ─── */
 .panel .insight-panel{background:var(--navy);border-radius:var(--radius);padding:1.5rem;overflow:hidden}
-.insight-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1rem}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
 .insight-card{background:var(--navy-3);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:1.15rem 1.25rem}
 .ins-badge{display:inline-block;font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.6rem;margin-right:.35rem}
 .ins-badge.crit{background:rgba(239,68,68,.15);color:#f87171}
@@ -236,6 +240,8 @@ a:hover{text-decoration:underline}
 .c-info-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--g200);padding:1.25rem}
 .c-info-card h3{font-size:.9rem;font-weight:600;color:var(--navy);margin-bottom:.35rem}
 .c-info-card p{font-size:.84rem;color:var(--g500);line-height:1.6}
+.req{color:var(--red);font-weight:600}
+.c-form .error{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(239,68,68,.1)!important}
 
 /* ── Chart Containers ───────────────────────────────────── */
 .chart-box{position:relative;width:100%;height:260px;padding:1rem 1.25rem}
@@ -374,12 +380,13 @@ a:hover{text-decoration:underline}
 ::-webkit-scrollbar-thumb:hover{background:var(--g400)}
 
 /* ── Responsive ─────────────────────────────────────────── */
-@media(max-width:1200px){
+@media(max-width:1100px){
     .g-8,.g-7,.g-9,.g-10,.span7,.span8{grid-column:span 12}
     .g-4,.g-5,.g-3,.g-2,.span4,.span5{grid-column:span 6}
     .fc-grid{grid-template-columns:repeat(4,1fr)}
+    .insight-grid{grid-template-columns:repeat(2,1fr)}
 }
-@media(max-width:900px){
+@media(max-width:700px){
     .hero{grid-template-columns:1fr;padding:2rem 1.5rem 1.5rem}
     .hero-stats{grid-template-columns:repeat(2,1fr)}
     .hero-chart-card{max-width:380px}
@@ -387,8 +394,7 @@ a:hover{text-decoration:underline}
     .contact-grid{grid-template-columns:1fr}
     .fc-grid{grid-template-columns:repeat(3,1fr)}
     .kpi-row{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:640px){
+    .insight-grid{grid-template-columns:1fr}
     .header{padding:0 1rem;height:56px}
     .top-nav{gap:0}
     .top-tab{font-size:.78rem;padding:.4rem .65rem}
@@ -733,7 +739,7 @@ a:hover{text-decoration:underline}
                     <div class="chart-box"><canvas id="bmCompareChart"></canvas></div>
                 </div>
                 <div class="card span5">
-                    <div class="card-header"><div><div class="card-title">Data Maturity Assessment</div><div class="card-sub">7 Data Orchard dimensions (1-5 scale)</div></div></div>
+                    <div class="card-header"><div><div class="card-title">Data Maturity Assessment</div><div class="card-sub">Data Orchard framework (1–5 scale)</div></div></div>
                     <div class="chart-box"><canvas id="bmMaturityChart"></canvas></div>
                 </div>
                 <div class="card span6">
@@ -882,21 +888,31 @@ a:hover{text-decoration:underline}
     <div class="contact-grid">
         <div class="c-form">
             <h3 style="margin-bottom:1.2rem;font-size:1.15rem">Book a Demo</h3>
-            <label>Name</label><input type="text" placeholder="Your name">
-            <label>Email</label><input type="email" placeholder="your.email@charity.org.uk">
-            <label>Organisation</label><input type="text" placeholder="Your charity or social enterprise">
+            <label>Name <span class="req">*</span></label><input type="text" placeholder="Your name" id="cName" required>
+            <label>Email <span class="req">*</span></label><input type="email" placeholder="your.email@charity.org.uk" id="cEmail" required>
+            <label>Organisation <span class="req">*</span></label><input type="text" placeholder="Your charity or social enterprise" id="cOrg" required>
+            <label>Organisation Type</label>
+            <select id="cOrgType">
+                <option value="">Select type...</option>
+                <option>Charity</option>
+                <option>Social Enterprise</option>
+                <option>Foundation</option>
+                <option>Housing Association</option>
+                <option>NHS / Public Sector</option>
+                <option>Other</option>
+            </select>
             <label>Area of Interest</label>
-            <select>
-                <option>Fundraising Analytics Platform</option>
-                <option>Partnership Intelligence Suite</option>
-                <option>Operational Efficiency Platform</option>
-                <option>Nonprofit Data Accelerator</option>
+            <select id="cInterest">
+                <option>Fundraising Analytics</option>
+                <option>Partnership Intelligence</option>
+                <option>Operational Efficiency</option>
+                <option>Data Platform</option>
                 <option>AI &amp; Advanced Analytics</option>
-                <option>Data Strategy &amp; Governance</option>
+                <option>Data Strategy</option>
                 <option>Full Suite Demo</option>
             </select>
-            <label>Message</label><textarea placeholder="Tell us about your challenges or what you'd like to see in a demo..."></textarea>
-            <button class="c-btn" onclick="alert('Thank you! Our not-for-profit team will be in touch within 24 hours.')">Request Demo</button>
+            <label>Message</label><textarea placeholder="Tell us about your challenges or what you'd like to see in a demo..." id="cMsg"></textarea>
+            <button class="c-btn" id="cSubmit">Request Demo</button>
         </div>
         <div class="c-info">
             <div class="c-info-card"><h3>York Office</h3><p>Suite 3, 20 George Hudson Street, York YO1 6WR</p></div>
@@ -930,12 +946,16 @@ function showPage(id,btn){
     if(btn)btn.classList.add('active');
     window.scrollTo(0,0);
 }
+const _panelInited={};
+function initPanel(id){if(_panelInited[id])return;_panelInited[id]=true;if(typeof window['_init_'+id]==='function')window['_init_'+id]();}
 document.querySelectorAll('.d-tab').forEach(tab=>{
     tab.addEventListener('click',function(){
         document.querySelectorAll('.d-tab').forEach(t=>t.classList.remove('active'));
         document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
         this.classList.add('active');
-        document.getElementById(this.dataset.panel).classList.add('active');
+        const panelId=this.dataset.panel;
+        document.getElementById(panelId).classList.add('active');
+        initPanel(panelId);
     });
 });
 
@@ -960,6 +980,9 @@ function mkCtx(id){const c=document.getElementById(id);return c?c.getContext('2d
    INITIALIZATION
    ═══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded',function(){
+
+/* Mark exec-summary as already initialised (default active panel) */
+_panelInited['exec-summary']=true;
 
 /* ── Hero Donut ──────────────────────────────────────────── */
 const hc=mkCtx('heroDonut');
@@ -991,8 +1014,9 @@ if(er)new Chart(er,{type:'radar',data:{labels:['Income Growth','Donor Retention'
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:10}}}},plugins:{legend:{position:'top'}}}});
 
 /* ═══════════════════════════════════════════════════════════
-   FUNDRAISING CHARTS
+   FUNDRAISING CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_fundraising=function(){
 const ft=mkCtx('frTrendChart');
 if(ft)new Chart(ft,{type:'line',data:{labels:MONTHS,datasets:[
     {label:'This Year',data:[580,620,710,650,690,720,750,680,810,890,720,780],borderColor:COLS.blue,backgroundColor:COLS.blue+'15',fill:true,tension:.3,pointRadius:3,borderWidth:2},
@@ -1013,17 +1037,20 @@ if(fch)new Chart(fch,{type:'pie',data:{labels:['Online','Direct Mail','Events','
 
 const fret=mkCtx('frRetentionChart');
 if(fret)new Chart(fret,{type:'line',data:{labels:['Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[
-    {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,tension:.3,pointRadius:4,borderWidth:2},
-    {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,tension:.3,pointRadius:3,borderWidth:1.5,borderDash:[5,5]},
-    {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,tension:.3,pointRadius:3,borderWidth:1.5,borderDash:[3,3]}
-]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{min:0,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
+    {label:'2023 Cohort',data:[100,62,48,38,31],borderColor:COLS.blue,backgroundColor:COLS.blue+'25',fill:true,tension:.3,pointRadius:4,borderWidth:2},
+    {label:'2022 Cohort',data:[100,58,44,34,28],borderColor:COLS.purple,backgroundColor:COLS.purple+'20',fill:true,tension:.3,pointRadius:3,borderWidth:1.5},
+    {label:'2021 Cohort',data:[100,54,40,30,24],borderColor:COLS.teal,backgroundColor:COLS.teal+'15',fill:true,tension:.3,pointRadius:3,borderWidth:1.5}
+]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{stacked:true,min:0,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top'}}}});
 
 const fltv=mkCtx('frLTVChart');
 if(fltv)new Chart(fltv,{type:'bar',data:{labels:['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed (re-activated)'],datasets:[{label:'3-Year LTV',data:[34100,5400,1020,58,245],backgroundColor:[COLS.blue,COLS.purple,COLS.teal,COLS.orange,COLS.amber],borderRadius:4,barPercentage:.6}]},options:{indexAxis:'horizontal',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#f0f0f0'},ticks:{callback:v=>'£'+v.toLocaleString()}},y:{grid:{display:false}}},plugins:{legend:{display:false}}}});
 
+}; /* end _init_fundraising */
+
 /* ═══════════════════════════════════════════════════════════
-   PARTNERSHIP CHARTS
+   PARTNERSHIP CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_partnerships=function(){
 const ph=mkCtx('ptHealthChart');
 if(ph)new Chart(ph,{type:'bar',data:{labels:['Platinum (90-100)','Gold (75-89)','Silver (60-74)','Bronze (<60)'],datasets:[{label:'Partners',data:[8,18,15,6],backgroundColor:[COLS.teal,COLS.blue,COLS.amber,COLS.red+'80'],borderRadius:4,barPercentage:.55}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{grid:{color:'#f0f0f0'},beginAtZero:true}},plugins:{legend:{display:false}}}});
 
@@ -1067,7 +1094,37 @@ const PARTNERS=[
     {name:'Tudor Trust',type:'Trust/Foundation',value:'£110,000',score:70,trend:'+1',status:'Silver'},
     {name:'University of Leeds',type:'Academic',value:'£45,000',score:64,trend:'-14',status:'Silver'},
     {name:'Sainsbury Foundation',type:'Corporate',value:'£55,000',score:58,trend:'-8',status:'Bronze'},
-    {name:'Community First',type:'Community',value:'£28,000',score:52,trend:'-5',status:'Bronze'}
+    {name:'Community First',type:'Community',value:'£28,000',score:52,trend:'-5',status:'Bronze'},
+    {name:'Esmée Fairbairn',type:'Trust/Foundation',value:'£140,000',score:90,trend:'+3',status:'Platinum'},
+    {name:'Henry Smith Charity',type:'Trust/Foundation',value:'£110,000',score:88,trend:'+2',status:'Gold'},
+    {name:'Nationwide Foundation',type:'Corporate',value:'£95,000',score:86,trend:'+1',status:'Gold'},
+    {name:'BBC Children in Need',type:'Grant Funder',value:'£75,000',score:85,trend:'+3',status:'Gold'},
+    {name:'Rank Foundation',type:'Trust/Foundation',value:'£68,000',score:83,trend:'0',status:'Gold'},
+    {name:'Sport England',type:'Statutory',value:'£145,000',score:82,trend:'+2',status:'Gold'},
+    {name:'Paul Hamlyn Foundation',type:'Trust/Foundation',value:'£90,000',score:81,trend:'+1',status:'Gold'},
+    {name:'Santander Foundation',type:'Corporate',value:'£42,000',score:80,trend:'+4',status:'Gold'},
+    {name:'NatWest Group',type:'Corporate',value:'£65,000',score:79,trend:'+1',status:'Gold'},
+    {name:'Comic Relief',type:'Grant Funder',value:'£120,000',score:78,trend:'-2',status:'Gold'},
+    {name:'Zurich Foundation',type:'Corporate',value:'£38,000',score:77,trend:'+3',status:'Gold'},
+    {name:'Power to Change',type:'Trust/Foundation',value:'£55,000',score:76,trend:'0',status:'Gold'},
+    {name:'Leeds Beckett Uni',type:'Academic',value:'£35,000',score:75,trend:'+2',status:'Gold'},
+    {name:'Bradford Metropolitan',type:'Statutory',value:'£160,000',score:73,trend:'-2',status:'Silver'},
+    {name:'Calderdale Council',type:'Statutory',value:'£85,000',score:72,trend:'+1',status:'Silver'},
+    {name:'Kirklees Council',type:'Statutory',value:'£78,000',score:71,trend:'-1',status:'Silver'},
+    {name:'Wakefield Council',type:'Statutory',value:'£62,000',score:70,trend:'0',status:'Silver'},
+    {name:'University of York',type:'Academic',value:'£48,000',score:69,trend:'+3',status:'Silver'},
+    {name:'Volant Charitable Trust',type:'Trust/Foundation',value:'£45,000',score:68,trend:'+1',status:'Silver'},
+    {name:'Tesco Community Grants',type:'Corporate',value:'£22,000',score:67,trend:'+2',status:'Silver'},
+    {name:'Asda Foundation',type:'Corporate',value:'£28,000',score:66,trend:'0',status:'Silver'},
+    {name:'Virgin Money Foundation',type:'Corporate',value:'£35,000',score:65,trend:'-1',status:'Silver'},
+    {name:'Sheffield CC',type:'Statutory',value:'£180,000',score:64,trend:'-3',status:'Silver'},
+    {name:'Wolfson Foundation',type:'Trust/Foundation',value:'£50,000',score:63,trend:'+2',status:'Silver'},
+    {name:'CHK Charities',type:'Trust/Foundation',value:'£30,000',score:62,trend:'-1',status:'Silver'},
+    {name:'Rotherham Council',type:'Statutory',value:'£55,000',score:61,trend:'-2',status:'Silver'},
+    {name:'Huddersfield Uni',type:'Academic',value:'£28,000',score:60,trend:'+1',status:'Silver'},
+    {name:'Morrisons Foundation',type:'Corporate',value:'£18,000',score:56,trend:'-4',status:'Bronze'},
+    {name:'Harrogate BC',type:'Statutory',value:'£22,000',score:54,trend:'-3',status:'Bronze'},
+    {name:'North Lincs Council',type:'Statutory',value:'£32,000',score:48,trend:'-6',status:'Bronze'}
 ];
 const ptb=document.getElementById('partnerTableBody');
 if(ptb)PARTNERS.forEach(p=>{
@@ -1090,9 +1147,12 @@ if(arg){
     });
 }
 
+}; /* end _init_partnerships */
+
 /* ═══════════════════════════════════════════════════════════
-   OPERATIONS CHARTS
+   OPERATIONS CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_operations=function(){
 const od=mkCtx('opDemandChart');
 if(od){
     const hist=[2100,2250,2400,2180,2320,2500,2650,2450,2800,3100,2700,2900];
@@ -1165,9 +1225,12 @@ if(mapEl){
     });
 }
 
+}; /* end _init_operations */
+
 /* ═══════════════════════════════════════════════════════════
-   BENCHMARKS CHARTS
+   BENCHMARKS CHARTS (lazy)
    ═══════════════════════════════════════════════════════════ */
+window._init_benchmarks=function(){
 const bc=mkCtx('bmCompareChart');
 if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fundraising ROI','Online Rev %','Vol. Retention','Overhead Ratio'],datasets:[
     {label:'Hope & Compass',data:[62,78,75,82,71,71],backgroundColor:COLS.blue,borderRadius:4,barPercentage:.6},
@@ -1176,9 +1239,9 @@ if(bc)new Chart(bc,{type:'bar',data:{labels:['Donor Retention','Cost per £','Fu
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%ile'}}},plugins:{legend:{position:'top'}}}});
 
 const bm=mkCtx('bmMaturityChart');
-if(bm)new Chart(bm,{type:'radar',data:{labels:['Data Leadership','Data Skills','Data Culture','Data Tools','Data Quality','Data Use','Data Governance'],datasets:[
-    {label:'Hope & Compass',data:[3.8,3.2,3.5,4.0,3.0,3.8,2.8],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
-    {label:'Sector Average',data:[2.4,2.1,2.3,2.8,2.0,2.5,1.9],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
+if(bm)new Chart(bm,{type:'radar',data:{labels:['Data','Tools','Leadership','Skills','Culture','Uses','Analysis'],datasets:[
+    {label:'Hope & Compass',data:[3.4,3.1,3.6,2.8,3.2,3.5,2.9],borderColor:COLS.blue,backgroundColor:COLS.blue+'20',pointBackgroundColor:COLS.blue,pointRadius:4},
+    {label:'Sector Average',data:[2.8,2.5,2.9,2.4,2.7,2.6,2.3],borderColor:COLS.purple,backgroundColor:COLS.purple+'15',pointBackgroundColor:COLS.purple,pointRadius:3,borderDash:[4,4]}
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:5,ticks:{stepSize:1,font:{size:9}},grid:{color:'#e5e5e5'},pointLabels:{font:{size:9}}}},plugins:{legend:{position:'top'}}}});
 
 const bsc=mkCtx('bmScatterChart');
@@ -1200,6 +1263,8 @@ if(bdv)new Chart(bdv,{type:'bar',data:{labels:['Hope & Compass','Sector Average'
     {label:'Trading/Earned',data:[7,8,13],backgroundColor:COLS.amber,barPercentage:.7}
 ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}}},plugins:{legend:{position:'top',labels:{font:{size:10}}}}}});
 
+}; /* end _init_benchmarks */
+
 /* ═══════════════════════════════════════════════════════════
    AI INSIGHTS FILTERING
    ═══════════════════════════════════════════════════════════ */
@@ -1217,6 +1282,161 @@ const aiV=document.getElementById('aiVertical');
 const aiP=document.getElementById('aiPriority');
 if(aiV)aiV.addEventListener('change',filterInsights);
 if(aiP)aiP.addEventListener('change',filterInsights);
+
+/* ═══════════════════════════════════════════════════════════
+   PANEL FILTERS & TOGGLES (deferred chart lookups)
+   ═══════════════════════════════════════════════════════════ */
+/* Fundraising period filter */
+const frPeriod=document.getElementById('frPeriod');
+if(frPeriod){
+    const fullThisYr=[580,620,710,650,690,720,750,680,810,890,720,780];
+    const fullPriorYr=[520,560,640,610,630,660,680,620,740,800,680,710];
+    frPeriod.addEventListener('change',function(){
+        const ch=Chart.getChart('frTrendChart');if(!ch)return;
+        const n=this.value==='all'?12:parseInt(this.value);
+        ch.data.labels=MONTHS.slice(-n);
+        ch.data.datasets[0].data=fullThisYr.slice(-n);
+        ch.data.datasets[1].data=fullPriorYr.slice(-n);
+        ch.update();
+    });
+}
+/* Fundraising segment toggle — switch between count and value view */
+const frSegToggle=document.getElementById('frSegToggle');
+if(frSegToggle){
+    frSegToggle.addEventListener('change',function(){
+        const ch=Chart.getChart('frSegChart');if(!ch)return;
+        if(this.checked){
+            ch.data.datasets[0].data=[521000,683700,1474000,401400,0];
+            ch.data.labels=['Major (£)','Mid-Level (£)','Regular (£)','One-time (£)','Lapsed (£)'];
+        }else{
+            ch.data.datasets[0].data=[42,318,3840,8920,4150];
+            ch.data.labels=['Major Donors','Mid-Level','Regular Givers','One-time','Lapsed'];
+        }
+        ch.update();
+    });
+}
+/* Partnership table filters */
+const ptType=document.getElementById('ptType');
+const ptHealth=document.getElementById('ptHealth');
+function filterPartnerTable(){
+    const t=ptType?ptType.value:'all';
+    const h=ptHealth?ptHealth.value:'all';
+    document.querySelectorAll('#partnerTableBody tr').forEach(row=>{
+        const cells=row.querySelectorAll('td');
+        if(cells.length<6)return;
+        const type=cells[1].textContent.trim();
+        const score=parseInt(cells[3].textContent);
+        let showType=t==='all';
+        if(t==='corporate')showType=type==='Corporate';
+        if(t==='grant')showType=type==='Grant Funder';
+        if(t==='statutory')showType=type==='Statutory';
+        if(t==='trust')showType=type.includes('Trust')||type.includes('Foundation');
+        if(t==='academic')showType=type==='Academic';
+        if(t==='community')showType=type==='Community';
+        let showHealth=h==='all';
+        if(h==='platinum')showHealth=score>=90;
+        if(h==='gold')showHealth=score>=75&&score<90;
+        if(h==='silver')showHealth=score>=60&&score<75;
+        if(h==='bronze')showHealth=score<60;
+        row.style.display=(showType&&showHealth)?'':'none';
+    });
+}
+if(ptType)ptType.addEventListener('change',filterPartnerTable);
+if(ptHealth)ptHealth.addEventListener('change',filterPartnerTable);
+/* Partnership funding toggle */
+const ptFundToggle=document.getElementById('ptFundToggle');
+if(ptFundToggle){
+    ptFundToggle.addEventListener('change',function(){
+        const ch=Chart.getChart('ptTrendChart');if(!ch)return;
+        ch.data.datasets.forEach(ds=>{
+            if(this.checked){ds.fill=true;ds.backgroundColor=ds.borderColor+'20';}
+            else{ds.fill=false;ds.backgroundColor='transparent';}
+        });
+        ch.update();
+    });
+}
+/* Operations forecast toggle */
+const opForecastToggle=document.getElementById('opForecastToggle');
+if(opForecastToggle){
+    opForecastToggle.addEventListener('change',function(){
+        const ch=Chart.getChart('opDemandChart');if(!ch)return;
+        const show=this.checked;
+        [1,2,3].forEach(i=>{ch.data.datasets[i].hidden=!show;});
+        ch.update();
+    });
+}
+/* Benchmarks source filter */
+const bmSource=document.getElementById('bmSource');
+if(bmSource){
+    bmSource.addEventListener('change',function(){
+        const ch=Chart.getChart('bmCompareChart');if(!ch)return;
+        const offsets={ncvo:[0,0,0,0,0,0],aaw:[2,-3,4,5,-2,1],mr:[-3,5,2,8,3,-2],'charity-digital':[4,2,-1,3,-4,3]};
+        const base=[40,75,67,58,58,69];
+        const off=offsets[this.value]||offsets.ncvo;
+        ch.data.datasets[1].data=base.map((v,i)=>v+off[i]);
+        ch.update();
+    });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABLE SORTING
+   ═══════════════════════════════════════════════════════════ */
+function makeSortable(tableId){
+    const table=document.getElementById(tableId);
+    if(!table)return;
+    const headers=table.querySelectorAll('th');
+    headers.forEach((th,colIdx)=>{
+        th.style.cursor='pointer';
+        th.title='Click to sort';
+        let asc=true;
+        th.addEventListener('click',function(){
+            const tbody=table.querySelector('tbody');
+            const rows=Array.from(tbody.querySelectorAll('tr'));
+            rows.sort((a,b)=>{
+                let aVal=a.children[colIdx]?.textContent.trim()||'';
+                let bVal=b.children[colIdx]?.textContent.trim()||'';
+                /* Try numeric comparison */
+                const aNum=parseFloat(aVal.replace(/[£,%k+\-—]/g,''));
+                const bNum=parseFloat(bVal.replace(/[£,%k+\-—]/g,''));
+                if(!isNaN(aNum)&&!isNaN(bNum)){
+                    return asc?aNum-bNum:bNum-aNum;
+                }
+                return asc?aVal.localeCompare(bVal):bVal.localeCompare(aVal);
+            });
+            rows.forEach(r=>tbody.appendChild(r));
+            /* Update sort indicator */
+            headers.forEach(h=>h.classList.remove('sort-asc','sort-desc'));
+            th.classList.add(asc?'sort-asc':'sort-desc');
+            asc=!asc;
+        });
+    });
+}
+makeSortable('donorTable');
+makeSortable('partnerTable');
+
+/* ═══════════════════════════════════════════════════════════
+   CONTACT FORM VALIDATION
+   ═══════════════════════════════════════════════════════════ */
+const cSubmit=document.getElementById('cSubmit');
+if(cSubmit){
+    cSubmit.addEventListener('click',function(e){
+        e.preventDefault();
+        const name=document.getElementById('cName');
+        const email=document.getElementById('cEmail');
+        const org=document.getElementById('cOrg');
+        let valid=true;
+        [name,email,org].forEach(f=>{
+            f.classList.remove('error');
+            if(!f.value.trim()){f.classList.add('error');valid=false;}
+        });
+        if(email&&email.value&&!email.value.includes('@')){email.classList.add('error');valid=false;}
+        if(valid){
+            alert('Thank you! Our not-for-profit team will be in touch within 24 hours.');
+            [name,email,org].forEach(f=>f.value='');
+            const msg=document.getElementById('cMsg');if(msg)msg.value='';
+        }
+    });
+}
 
 }); /* end DOMContentLoaded */
 </script>
